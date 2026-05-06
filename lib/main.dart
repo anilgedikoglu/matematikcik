@@ -13,7 +13,7 @@ void main() async {
   await AudioService.init();
   runApp(
     DevicePreview(
-      enabled: !kReleaseMode,
+      enabled: false,
       builder: (_) => const MatematikcikApp(),
     ),
   );

@@ -60,46 +60,41 @@ class _MenuScreenState extends State<MenuScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Container(
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [Color(0xFFFFF0F5), Color(0xFFEDF4FF), Color(0xFFFFF8E7)],
-          ),
-        ),
-        child: SafeArea(
-          child: Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                ClipOval(
-                  child: Image.asset('assets/matematikciikon.png',
-                      width: 120, height: 120, fit: BoxFit.cover),
-                ),
-                const SizedBox(height: 16),
-                const Text(
-                  'Matematikçik',
-                  style: TextStyle(
-                    fontSize: 36,
-                    fontWeight: FontWeight.w900,
-                    color: Color(0xFF7C5CBF),
-                  ),
-                ),
-                const SizedBox(height: 48),
-                _menuButton('YENİ OYUN', const Color(0xFFFF6B9D), _newGame),
-                const SizedBox(height: 16),
-                _menuButton(
-                  'DEVAM ET',
-                  _hasSave ? const Color(0xFF56C068) : const Color(0xFFD4C5E2),
-                  _hasSave ? _continueGame : null,
-                ),
-                const SizedBox(height: 16),
-                _menuButton('AYARLAR', const Color(0xFF4BBEF5), _settings),
-              ],
+      body: Stack(
+        fit: StackFit.expand,
+        children: [
+          Image.asset('assets/bg.png', fit: BoxFit.cover),
+          SafeArea(
+            child: LayoutBuilder(
+              builder: (context, constraints) {
+                const double mat1H = 130;
+                const double shift = 90; // 1.5 × 60px (mat1 position anchor)
+                // mat1 top is anchored to the old centered+shifted position
+                const double anchorContentH = mat1H + 32 + 60 * 3 + 16 * 2; // 396
+                final double mat1Top =
+                    ((constraints.maxHeight - anchorContentH) / 2 - shift).clamp(0.0, double.infinity);
+                const double gap = 92; // 32 base + 60 (1 button down)
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    SizedBox(height: mat1Top),
+                    Center(child: Image.asset('assets/mat1.png', height: mat1H)),
+                    const SizedBox(height: gap),
+                    _menuButton('YENİ OYUN', const Color(0xFFFF6B9D), _newGame),
+                    const SizedBox(height: 16),
+                    _menuButton(
+                      'DEVAM ET',
+                      _hasSave ? const Color(0xFF56C068) : const Color(0xFFD4C5E2),
+                      _hasSave ? _continueGame : null,
+                    ),
+                    const SizedBox(height: 16),
+                    _menuButton('AYARLAR', const Color(0xFF4BBEF5), _settings),
+                  ],
+                );
+              },
             ),
           ),
-        ),
+        ],
       ),
     );
   }

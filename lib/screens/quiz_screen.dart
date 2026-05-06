@@ -27,6 +27,14 @@ class _C {
     Color(0xFF4BBEF5), // 8
     Color(0xFFFF6B9D), // 9
   ];
+
+  // Seçim butonları için canlı renkler
+  static const List<Color> choiceBtns = [
+    Color(0xFFFF6B9D),
+    Color(0xFF4BBEF5),
+    Color(0xFFFFD93D),
+    Color(0xFF56C068),
+  ];
 }
 
 // ── Feedback enum ──────────────────────────────────────────────────────────
@@ -43,14 +51,25 @@ class QuizScreen extends StatefulWidget {
 class _QuizScreenState extends State<QuizScreen> with TickerProviderStateMixin {
   final _rng = Random();
   late List<Question> _questions;
-  late int _childIndex; // oyun boyunca sabit karakter indeksi (1-4)
+  late int _childIndex;
+  late int _lives;
+  int _durusIndex = 1;
   int  _index  = 0;
   int  _score  = 0;
   String _input = '';
   _FB  _fb     = _FB.none;
   bool _levelDone = false;
   bool _gameOver  = false;
-  bool _timeUpGameOver = false; // true → süre bitti, false → yanlış cevap
+  bool _timeUpGameOver = false;
+
+  // Hangi dünyada olduğumuzu belirler (0-5)
+  int get _world => (widget.level - 1) ~/ 10;
+
+  // Seçim modu (world 0-2): buton seçenekleri
+  List<int> _buttonChoices = [];
+
+  // Karışık keypad (world 5): rakam sırası
+  List<String> _shuffledDigits = [];
 
   static const int _timerSec = 30;
 
@@ -62,7 +81,11 @@ class _QuizScreenState extends State<QuizScreen> with TickerProviderStateMixin {
     super.initState();
     _questions = generateLevel(widget.level, _rng);
     _childIndex = _rng.nextInt(4) + 1;
-    AudioService.playGameMusic(); // bölüm başında random müzik seç
+    _lives = widget.state.lives;
+    AudioService.playGameMusic();
+
+    if (_world <= 2) _generateButtonChoices();
+    if (_world == 5) _reshuffleDigits();
 
     _fbCtrl = AnimationController(
         duration: const Duration(milliseconds: 500), vsync: this);
@@ -101,6 +124,49 @@ class _QuizScreenState extends State<QuizScreen> with TickerProviderStateMixin {
 
   Question get _current => _questions[_index];
 
+  // ── Seçim butonu yardımcıları ─────────────────────────────────────────
+
+  void _generateButtonChoices() {
+    final correct = _questions[_index].answer;
+    final count = [2, 3, 4][_world.clamp(0, 2)];
+    final set = <int>{correct};
+    var attempts = 0;
+    while (set.length < count && attempts++ < 400) {
+      final range = (correct.abs() ~/ 3 + 4).clamp(3, 25);
+      int w = correct + _rng.nextInt(range * 2 + 1) - range;
+      if (w < 0) w = w.abs().clamp(1, 999);
+      if (w != correct) set.add(w);
+    }
+    _buttonChoices = set.toList()..shuffle(_rng);
+  }
+
+  void _reshuffleDigits() {
+    _shuffledDigits = ['0','1','2','3','4','5','6','7','8','9']..shuffle(_rng);
+  }
+
+  // Soru değişince seçenekleri yenile
+  void _onQuestionReady() {
+    if (_world <= 2) _generateButtonChoices();
+    if (_world == 5) _reshuffleDigits();
+  }
+
+  // ── Kalpler ───────────────────────────────────────────────────────────
+
+  Widget _buildHearts() {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: List.generate(3, (i) {
+        final alive = i < _lives;
+        return Padding(
+          padding: const EdgeInsets.only(right: 2),
+          child: alive
+              ? const Text('❤️', style: TextStyle(fontSize: 16))
+              : Image.asset('assets/kirikkalp.png', width: 18, height: 18, fit: BoxFit.contain),
+        );
+      }),
+    );
+  }
+
   // ── Zaman doldu ────────────────────────────────────────────────────────
   void _onTimeUp() {
     if (_fb != _FB.none || _levelDone) return;
@@ -108,14 +174,27 @@ class _QuizScreenState extends State<QuizScreen> with TickerProviderStateMixin {
     _advanceAfterFeedback(correct: false);
   }
 
+  // ── Seçim butonu tıklama ──────────────────────────────────────────────
+  void _onButtonChoice(int value) {
+    if (_fb != _FB.none) return;
+    _timerCtrl.stop();
+    _advanceAfterFeedback(correct: value == _current.answer);
+  }
+
+  // ── Keypad tuşu ────────────────────────────────────────────────────────
   void _onKey(String key) {
     if (_fb != _FB.none) return;
     if (key == 'backspace') {
       if (_input.isNotEmpty) setState(() => _input = _input.substring(0, _input.length - 1));
     } else if (key == 'check') {
       _submit();
-    } else if (_input.length < 3) {
+    } else if (_input.length < 4) {
       setState(() => _input += key);
+      // Dünya 3-4: doğru cevap girilince otomatik gönder
+      if (_world == 3 || _world == 4) {
+        final val = int.tryParse(_input);
+        if (val != null && val == _current.answer) _submit();
+      }
     }
   }
 
@@ -124,8 +203,7 @@ class _QuizScreenState extends State<QuizScreen> with TickerProviderStateMixin {
     final val = int.tryParse(_input);
     if (val == null) return;
     _timerCtrl.stop();
-    final ok = val == _current.answer;
-    await _advanceAfterFeedback(correct: ok);
+    await _advanceAfterFeedback(correct: val == _current.answer);
   }
 
   Future<void> _advanceAfterFeedback({required bool correct}) async {
@@ -133,18 +211,39 @@ class _QuizScreenState extends State<QuizScreen> with TickerProviderStateMixin {
     setState(() => _fb = correct ? _FB.correct : _FB.wrong);
     _fbCtrl.forward(from: 0);
     if (correct) {
-      AudioService.playCorrect(); // tik sesi
+      AudioService.playCorrect();
     } else {
       _shakeCtrl.forward(from: 0);
+      setState(() => _lives--);
     }
 
-    await Future.delayed(Duration(milliseconds: correct ? 900 : 2000));
+    await Future.delayed(Duration(milliseconds: correct ? 900 : 1500));
     if (!mounted) return;
 
     if (!correct) {
-      // Tek hata → oyun bitti
-      await AudioService.playGameOver(); // müzik durur, oyunbitti.wav çalar
-      setState(() { _fb = _FB.none; _gameOver = true; });
+      if (_lives <= 0) {
+        await AudioService.playGameOver();
+        _durusIndex = _rng.nextInt(4) + 1;
+        setState(() { _fb = _FB.none; _gameOver = true; });
+      } else {
+        setState(() {
+          _fb = _FB.none;
+          _input = '';
+          if (_index + 1 < questionsPerLevel) {
+            _index++;
+            _onQuestionReady();
+          } else {
+            _levelDone = true;
+          }
+        });
+        if (!_levelDone) {
+          _cardCtrl.forward(from: 0);
+          _timerCtrl.forward(from: 0);
+          AudioService.playTransition();
+        } else {
+          await AudioService.playWin();
+        }
+      }
       return;
     }
 
@@ -152,7 +251,6 @@ class _QuizScreenState extends State<QuizScreen> with TickerProviderStateMixin {
     await _cardCtrl.reverse();
 
     if (_index + 1 >= questionsPerLevel) {
-      // Bölüm bitti
       setState(() { _fb = _FB.none; _levelDone = true; });
       await AudioService.playWin();
     } else {
@@ -160,6 +258,7 @@ class _QuizScreenState extends State<QuizScreen> with TickerProviderStateMixin {
         _fb = _FB.none;
         _input = '';
         _index++;
+        _onQuestionReady();
       });
       _cardCtrl.forward(from: 0);
       _timerCtrl.forward(from: 0);
@@ -168,13 +267,16 @@ class _QuizScreenState extends State<QuizScreen> with TickerProviderStateMixin {
   }
 
   void _finishLevel() {
-    Navigator.of(context).pop(_score); // score'u MapScreen'e gönder
+    Navigator.of(context).pop(_score * 10 + _lives);
   }
 
   // ── Build ─────────────────────────────────────────────────────────────
 
   @override
   Widget build(BuildContext context) {
+    if (_gameOver) return Scaffold(body: _buildGameOver());
+    if (_levelDone) return Scaffold(body: _buildLevelComplete());
+
     return Scaffold(
       body: Container(
         decoration: const BoxDecoration(
@@ -185,18 +287,13 @@ class _QuizScreenState extends State<QuizScreen> with TickerProviderStateMixin {
             colors: [Color(0xFFFFF0F5), Color(0xFFEDF4FF), Color(0xFFFFF8E7)],
           ),
         ),
-        child: SafeArea(
-          child: _gameOver
-              ? _buildGameOver()
-              : _levelDone
-                  ? _buildLevelComplete()
-                  : _buildQuiz(),
-        ),
+        child: SafeArea(child: _buildQuiz()),
       ),
     );
   }
 
   Widget _buildQuiz() {
+    final isButtonMode = _world <= 2;
     return Stack(
       alignment: Alignment.center,
       children: [
@@ -206,14 +303,17 @@ class _QuizScreenState extends State<QuizScreen> with TickerProviderStateMixin {
             const Spacer(),
             FadeTransition(opacity: _cardFade, child: _buildQuestionCard()),
             const Spacer(),
-            AnimatedBuilder(
-              animation: _shakeAnim,
-              builder: (_, child) =>
-                  Transform.translate(offset: Offset(_shakeAnim.value, 0), child: child),
-              child: FadeTransition(opacity: _cardFade, child: _buildAnswerBox()),
-            ),
-            const Spacer(),
-            _buildNumpad(),
+            if (!isButtonMode) ...[
+              AnimatedBuilder(
+                animation: _shakeAnim,
+                builder: (_, child) =>
+                    Transform.translate(offset: Offset(_shakeAnim.value, 0), child: child),
+                child: FadeTransition(opacity: _cardFade, child: _buildAnswerBox()),
+              ),
+              const Spacer(),
+            ],
+            _buildInputArea(),
+            if (_world <= 2) const Spacer(),
             const SizedBox(height: 20),
           ],
         ),
@@ -230,7 +330,7 @@ class _QuizScreenState extends State<QuizScreen> with TickerProviderStateMixin {
       padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
       child: Column(
         children: [
-          // Üst satır: geri | Bölüm X (orta) | ⭐ skor
+          // Satır 1: geri | Bölüm X (orta)
           Row(
             children: [
               GestureDetector(
@@ -252,33 +352,43 @@ class _QuizScreenState extends State<QuizScreen> with TickerProviderStateMixin {
                   style: const TextStyle(
                       fontSize: 18, fontWeight: FontWeight.w900, color: _C.purple)),
               const Spacer(),
+              const SizedBox(width: 40),
+            ],
+          ),
+          const SizedBox(height: 8),
+          // Satır 2: tavşan bar | ⭐ skor
+          Row(
+            children: [
+              Expanded(child: _buildProgressBar()),
+              const SizedBox(width: 10),
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
+                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                 decoration: BoxDecoration(
                   color: _C.pink.withValues(alpha: 0.15),
-                  borderRadius: BorderRadius.circular(16),
+                  borderRadius: BorderRadius.circular(14),
                 ),
                 child: Row(children: [
-                  const Text('⭐', style: TextStyle(fontSize: 14)),
-                  const SizedBox(width: 4),
+                  const Text('⭐', style: TextStyle(fontSize: 13)),
+                  const SizedBox(width: 3),
                   Text('$_score',
                       style: const TextStyle(
-                          fontSize: 16, fontWeight: FontWeight.bold,
+                          fontSize: 15, fontWeight: FontWeight.bold,
                           color: _C.pink)),
                   Text('/$questionsPerLevel',
                       style: const TextStyle(
-                          fontSize: 12, fontWeight: FontWeight.w600,
+                          fontSize: 11, fontWeight: FontWeight.w600,
                           color: _C.purple)),
                 ]),
               ),
             ],
           ),
-          const SizedBox(height: 10),
-          // Alt satır: ilerlemeli tavşan barı | sayaç
+          const SizedBox(height: 8),
+          // Satır 3: kalpler (ortalı) | sayaç
           Row(
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Expanded(child: _buildProgressBar()),
-              const SizedBox(width: 10),
+              _buildHearts(),
+              const SizedBox(width: 12),
               _buildTimerCircle(),
             ],
           ),
@@ -299,7 +409,6 @@ class _QuizScreenState extends State<QuizScreen> with TickerProviderStateMixin {
           child: Stack(
             clipBehavior: Clip.none,
             children: [
-              // Arka plan bar
               Positioned(
                 left: 0, right: 0, top: 10, bottom: 0,
                 child: Container(
@@ -309,23 +418,19 @@ class _QuizScreenState extends State<QuizScreen> with TickerProviderStateMixin {
                   ),
                 ),
               ),
-              // Dolu kısım
               Positioned(
                 left: 0, width: fillW.clamp(8.0, barW), top: 10, bottom: 0,
                 child: Container(
                   decoration: BoxDecoration(
-                    gradient: const LinearGradient(
-                        colors: [_C.pink, _C.violet]),
+                    gradient: const LinearGradient(colors: [_C.pink, _C.violet]),
                     borderRadius: BorderRadius.circular(8),
                   ),
                 ),
               ),
-              // Tavşan — dolu kısmın ucunda
               Positioned(
                 left: (fillW - 14).clamp(0.0, barW - 20),
                 top: -4,
-                child: const Text('🐰',
-                    style: TextStyle(fontSize: 22)),
+                child: const Text('🐰', style: TextStyle(fontSize: 22)),
               ),
             ],
           ),
@@ -347,15 +452,15 @@ class _QuizScreenState extends State<QuizScreen> with TickerProviderStateMixin {
           color = Color.lerp(_C.red, const Color(0xFFFFD93D), p * 2)!;
         }
         return SizedBox(
-          width: 52, height: 52,
+          width: 38, height: 38,
           child: Stack(alignment: Alignment.center, children: [
             CustomPaint(
-              size: const Size(52, 52),
+              size: const Size(38, 38),
               painter: _TimerPainter(progress: p, color: color),
             ),
             Text('$sec',
                 style: TextStyle(
-                    fontSize: 18, fontWeight: FontWeight.w800, color: color)),
+                    fontSize: 14, fontWeight: FontWeight.w800, color: color)),
           ]),
         );
       },
@@ -406,7 +511,7 @@ class _QuizScreenState extends State<QuizScreen> with TickerProviderStateMixin {
         child: Text(
           _input.isEmpty ? '—' : _input,
           style: TextStyle(
-              fontSize: 42, fontWeight: FontWeight.bold,
+              fontSize: _input.length >= 4 ? 32 : 42, fontWeight: FontWeight.bold,
               color: _input.isEmpty ? _C.purpleLight : _C.purple),
         ),
       ),
@@ -415,24 +520,143 @@ class _QuizScreenState extends State<QuizScreen> with TickerProviderStateMixin {
 
   Widget _buildFeedbackBadge() {
     final ok = _fb == _FB.correct;
-    final asset = ok
-        ? 'assets/cocukgood$_childIndex.png'
-        : 'assets/cocukbad$_childIndex.png';
-    final size = ok ? 192.0 : 208.0;
-    return Image.asset(asset, width: size, height: size, fit: BoxFit.contain);
+    if (!ok) {
+      return Image.asset('assets/kirikkalp.png', width: 200, height: 200, fit: BoxFit.contain);
+    }
+    return Image.asset('assets/cocukgood$_childIndex.png', width: 192, height: 192, fit: BoxFit.contain);
   }
 
-  // ── Numpad ───────────────────────────────────────────────────────────
+  // ── Giriş alanı (mod seçici) ──────────────────────────────────────────
 
-  static const _rows = [
-    ['7','8','9'], ['4','5','6'], ['1','2','3'], ['backspace','0','check'],
-  ];
+  Widget _buildInputArea() {
+    if (_world <= 2) return _buildButtonChoices();
+    return _buildNumpad();
+  }
+
+  // ── Seçim butonları (world 0-2) ───────────────────────────────────────
+
+  Widget _buildButtonChoices() {
+    final disabled = _fb != _FB.none;
+
+    Widget choiceBtn(int val, int colorIdx) {
+      final color = _C.choiceBtns[colorIdx % _C.choiceBtns.length];
+      return Expanded(
+        child: GestureDetector(
+          onTap: disabled ? null : () => _onButtonChoice(val),
+          child: AnimatedOpacity(
+            duration: const Duration(milliseconds: 150),
+            opacity: disabled ? 0.5 : 1.0,
+            child: Container(
+              margin: const EdgeInsets.all(6),
+              decoration: BoxDecoration(
+                color: color,
+                borderRadius: BorderRadius.circular(24),
+                boxShadow: [BoxShadow(
+                  color: color.withValues(alpha: 0.45),
+                  blurRadius: 12,
+                  offset: const Offset(0, 6),
+                )],
+              ),
+              child: Center(
+                child: Text(
+                  '$val',
+                  style: const TextStyle(
+                    fontSize: 40,
+                    fontWeight: FontWeight.w900,
+                    color: Colors.white,
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
+      );
+    }
+
+    final choices = _buttonChoices;
+    if (choices.isEmpty) return const SizedBox.shrink();
+
+    // 2 buton: tek büyük satır
+    if (choices.length == 2) {
+      return Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 20),
+        child: SizedBox(
+          height: 150,
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              choiceBtn(choices[0], 0),
+              choiceBtn(choices[1], 1),
+            ],
+          ),
+        ),
+      );
+    }
+
+    // 3 buton: tek satır
+    if (choices.length == 3) {
+      return Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 20),
+        child: SizedBox(
+          height: 130,
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              choiceBtn(choices[0], 0),
+              choiceBtn(choices[1], 1),
+              choiceBtn(choices[2], 2),
+            ],
+          ),
+        ),
+      );
+    }
+
+    // 4 buton: 2×2 grid
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20),
+      child: Column(
+        children: [
+          SizedBox(
+            height: 110,
+            child: Row(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+              choiceBtn(choices[0], 0),
+              choiceBtn(choices[1], 1),
+            ]),
+          ),
+          SizedBox(
+            height: 110,
+            child: Row(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+              choiceBtn(choices[2], 2),
+              choiceBtn(choices[3], 3),
+            ]),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // ── Numpad (world 3-5) ────────────────────────────────────────────────
+
+  List<List<String>> _getNumpadRows() {
+    if (_world == 5 && _shuffledDigits.length == 10) {
+      final d = _shuffledDigits;
+      return [
+        [d[0], d[1], d[2]],
+        [d[3], d[4], d[5]],
+        [d[6], d[7], d[8]],
+        ['backspace', d[9], 'check'],
+      ];
+    }
+    return [
+      ['7','8','9'], ['4','5','6'], ['1','2','3'], ['backspace','0','check'],
+    ];
+  }
 
   Widget _buildNumpad() {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
       child: Column(
-        children: _rows.map((row) => Padding(
+        children: _getNumpadRows().map((row) => Padding(
           padding: const EdgeInsets.symmetric(vertical: 5),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -486,113 +710,88 @@ class _QuizScreenState extends State<QuizScreen> with TickerProviderStateMixin {
 
   // ── Level tamamlandı ─────────────────────────────────────────────────
 
-  // ── Oyun bitti (hata yapıldı) ────────────────────────────────────────────
-
-  Widget _buildGameOver() {
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(32),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(_timeUpGameOver ? '⏳' : '😞', style: const TextStyle(fontSize: 90)),
-            const SizedBox(height: 20),
-            const Text(
-              'Oyun Bitti!',
-              style: TextStyle(
-                  fontSize: 38, fontWeight: FontWeight.w900, color: _C.red),
-            ),
-            const SizedBox(height: 12),
-            Text(
-              'Bölüm ${widget.level}',
-              style: const TextStyle(
-                  fontSize: 22, fontWeight: FontWeight.w600, color: _C.purple),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              '$_score doğru cevap verdin',
-              style: const TextStyle(
-                  fontSize: 20, fontWeight: FontWeight.w500, color: _C.pink),
-            ),
-            const SizedBox(height: 40),
-            GestureDetector(
-              onTap: () => Navigator.of(context).pop(),
-              child: Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 40, vertical: 18),
-                decoration: BoxDecoration(
-                  gradient: const LinearGradient(
-                      colors: [Color(0xFFFF5A5A), Color(0xFFFF9A3C)]),
-                  borderRadius: BorderRadius.circular(30),
-                  boxShadow: [
-                    BoxShadow(
-                        color: _C.red.withValues(alpha: 0.4),
-                        blurRadius: 16,
-                        offset: const Offset(0, 6))
-                  ],
-                ),
-                child: const Text(
-                  'Tekrar Dene 🔄',
-                  style: TextStyle(
-                      fontSize: 22,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white),
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
   Widget _buildLevelComplete() {
     final pct = (_score / questionsPerLevel * 100).round();
     final emoji = pct >= 90 ? '🏆' : pct >= 70 ? '⭐' : '💪';
 
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(32),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(emoji, style: const TextStyle(fontSize: 80)),
-            const SizedBox(height: 16),
-            Text('Bölüm ${widget.level} Bitti!',
-                style: const TextStyle(
-                    fontSize: 34, fontWeight: FontWeight.w900, color: _C.purple)),
-            const SizedBox(height: 12),
-            Text('$_score / $questionsPerLevel doğru',
-                style: const TextStyle(
-                    fontSize: 26, fontWeight: FontWeight.w700, color: _C.pink)),
-            const SizedBox(height: 4),
-            Text('%$pct başarı',
-                style: const TextStyle(
-                    fontSize: 20, color: _C.purple, fontWeight: FontWeight.w500)),
-            const SizedBox(height: 40),
-            GestureDetector(
-              onTap: _finishLevel,
-              child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 18),
-                decoration: BoxDecoration(
-                  gradient: const LinearGradient(
-                      colors: [_C.pink, _C.violet]),
-                  borderRadius: BorderRadius.circular(30),
-                  boxShadow: [BoxShadow(
-                      color: _C.pink.withValues(alpha: 0.4),
-                      blurRadius: 16, offset: const Offset(0, 6))],
+    return Stack(
+      fit: StackFit.expand,
+      children: [
+        Image.asset('assets/bg.png', fit: BoxFit.cover),
+        Center(
+          child: Padding(
+            padding: const EdgeInsets.all(32),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(emoji, style: const TextStyle(fontSize: 80)),
+                const SizedBox(height: 16),
+                Text('Bölüm ${widget.level}',
+                    style: const TextStyle(
+                        fontSize: 30, fontWeight: FontWeight.w700, color: _C.purple)),
+                const SizedBox(height: 4),
+                const Text('TAMAMLANDI!',
+                    style: TextStyle(
+                        fontSize: 38, fontWeight: FontWeight.w900, color: _C.pink)),
+                const SizedBox(height: 12),
+                Text('$_score / $questionsPerLevel doğru',
+                    style: const TextStyle(
+                        fontSize: 26, fontWeight: FontWeight.w700, color: _C.pink)),
+                const SizedBox(height: 4),
+                Text('%$pct başarı',
+                    style: const TextStyle(
+                        fontSize: 20, color: _C.purple, fontWeight: FontWeight.w500)),
+                const SizedBox(height: 40),
+                GestureDetector(
+                  onTap: _finishLevel,
+                  child: Image.asset('assets/devamet.png', height: 160),
                 ),
-                child: Text(
-                  widget.level < 10 ? 'Haritaya Dön 🗺️' : 'Oyunu Bitir 🎉',
-                  style: const TextStyle(
-                      fontSize: 22, fontWeight: FontWeight.bold,
-                      color: Colors.white),
-                ),
-              ),
+              ],
             ),
-          ],
+          ),
         ),
-      ),
+      ],
+    );
+  }
+
+  // ── Oyun bitti ────────────────────────────────────────────────────────
+
+  Widget _buildGameOver() {
+    return Stack(
+      fit: StackFit.expand,
+      children: [
+        Image.asset('assets/bg.png', fit: BoxFit.cover),
+        Center(
+          child: Padding(
+            padding: const EdgeInsets.all(32),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Image.asset('assets/durus$_durusIndex.png', height: 200),
+                const SizedBox(height: 20),
+                Image.asset('assets/oyunbitti.png', height: 160),
+                const SizedBox(height: 12),
+                Text(
+                  'Bölüm ${widget.level}',
+                  style: const TextStyle(
+                      fontSize: 22, fontWeight: FontWeight.w600, color: _C.purple),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  '$_score doğru cevap verdin',
+                  style: const TextStyle(
+                      fontSize: 20, fontWeight: FontWeight.w500, color: _C.pink),
+                ),
+                const SizedBox(height: 40),
+                GestureDetector(
+                  onTap: () => Navigator.of(context).pop(-1),
+                  child: Image.asset('assets/tekrardene.png', height: 160),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ],
     );
   }
 }
