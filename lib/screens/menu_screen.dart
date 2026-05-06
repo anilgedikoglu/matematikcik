@@ -12,7 +12,7 @@ class MenuScreen extends StatefulWidget {
 }
 
 class _MenuScreenState extends State<MenuScreen> {
-  bool _hasSave = false;
+  GameState? _savedState;
 
   @override
   void initState() {
@@ -23,14 +23,17 @@ class _MenuScreenState extends State<MenuScreen> {
 
   @override
   void dispose() {
-    // Başka ekrana geçişte müzik o ekranın initState'i durduracak.
-    // Sadece uygulama kapanırsa temizle.
     super.dispose();
   }
 
   Future<void> _checkSave() async {
     final has = await SaveService.hasSave();
-    if (mounted) setState(() => _hasSave = has);
+    if (!has) {
+      if (mounted) setState(() => _savedState = null);
+      return;
+    }
+    final state = await SaveService.load();
+    if (mounted) setState(() => _savedState = state);
   }
 
   void _newGame() async {
@@ -44,7 +47,7 @@ class _MenuScreenState extends State<MenuScreen> {
   }
 
   void _continueGame() async {
-    final state = await SaveService.load();
+    final state = _savedState ?? await SaveService.load();
     if (!mounted) return;
     Navigator.of(context).pushReplacement(
       MaterialPageRoute(builder: (_) => MapScreen(state: state)),
@@ -74,18 +77,33 @@ class _MenuScreenState extends State<MenuScreen> {
                 final double mat1Top =
                     ((constraints.maxHeight - anchorContentH) / 2 - shift).clamp(0.0, double.infinity);
                 const double gap = 92; // 32 base + 60 (1 button down)
+                final hasSave = _savedState != null;
+                final level = _savedState?.unlockedLevel ?? 1;
+                final devamLabel = hasSave ? 'DEVAM ET ($level)' : 'DEVAM ET';
+
                 return Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     SizedBox(height: mat1Top),
                     Center(child: Image.asset('assets/mat1.png', height: mat1H)),
-                    const SizedBox(height: gap),
+                    const SizedBox(height: 20),
+                    if (hasSave)
+                      Text(
+                        'En yüksek: $level. bölüm',
+                        style: const TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w700,
+                          color: Color(0xFF7C5CBF),
+                          shadows: [Shadow(color: Colors.white54, blurRadius: 4)],
+                        ),
+                      ),
+                    SizedBox(height: hasSave ? 16 : gap - 20),
                     _menuButton('YENİ OYUN', const Color(0xFFFF6B9D), _newGame),
                     const SizedBox(height: 16),
                     _menuButton(
-                      'DEVAM ET',
-                      _hasSave ? const Color(0xFF56C068) : const Color(0xFFD4C5E2),
-                      _hasSave ? _continueGame : null,
+                      devamLabel,
+                      hasSave ? const Color(0xFF56C068) : const Color(0xFFD4C5E2),
+                      hasSave ? _continueGame : null,
                     ),
                     const SizedBox(height: 16),
                     _menuButton('AYARLAR', const Color(0xFF4BBEF5), _settings),

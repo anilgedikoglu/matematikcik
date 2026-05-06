@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:device_preview/device_preview.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'services/audio_service.dart';
+import 'services/ad_service.dart';
 import 'screens/intro_screen.dart';
 
 void main() async {
@@ -11,6 +12,7 @@ void main() async {
   FlutterNativeSplash.preserve(widgetsBinding: binding);
   await SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
   await AudioService.init();
+  await AdService.init();
   runApp(
     DevicePreview(
       enabled: false,

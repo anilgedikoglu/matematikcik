@@ -4,6 +4,7 @@ import '../models/question.dart';
 import '../models/level_questions.dart';
 import '../models/game_state.dart';
 import '../services/audio_service.dart';
+import '../services/ad_service.dart';
 
 // ── Renkler ────────────────────────────────────────────────────────────────
 class _C {
@@ -160,7 +161,7 @@ class _QuizScreenState extends State<QuizScreen> with TickerProviderStateMixin {
         return Padding(
           padding: const EdgeInsets.only(right: 2),
           child: alive
-              ? const Text('❤️', style: TextStyle(fontSize: 16))
+              ? const Text('❤️', style: TextStyle(fontSize: 21))
               : Image.asset('assets/kirikkalp.png', width: 18, height: 18, fit: BoxFit.contain),
         );
       }),
@@ -221,6 +222,9 @@ class _QuizScreenState extends State<QuizScreen> with TickerProviderStateMixin {
     if (!mounted) return;
 
     if (!correct) {
+      // Her 3 yanlışta 1 geçiş reklamı (reklam kapanana kadar bekler)
+      await AdService.onWrongAnswer();
+      if (!mounted) return;
       if (_lives <= 0) {
         await AudioService.playGameOver();
         _durusIndex = _rng.nextInt(4) + 1;
