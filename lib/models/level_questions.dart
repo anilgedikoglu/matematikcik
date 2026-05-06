@@ -3,9 +3,19 @@ import 'question.dart';
 
 const int questionsPerLevel = 30;
 
-/// Her level için 30 soru üretir.
-List<Question> generateLevel(int level, Random rng) =>
-    List.generate(questionsPerLevel, (_) => _pick(rng, level));
+/// Her level için 30 soru üretir. Ardışık aynı soru çıkmaz.
+List<Question> generateLevel(int level, Random rng) {
+  final questions = <Question>[];
+  String? lastDisplay;
+  while (questions.length < questionsPerLevel) {
+    final q = _pick(rng, level);
+    if (q.display != lastDisplay) {
+      questions.add(q);
+      lastDisplay = q.display;
+    }
+  }
+  return questions;
+}
 
 // ── Yardımcılar ────────────────────────────────────────────────────────────
 

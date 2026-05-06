@@ -92,12 +92,13 @@ class _MapScreenState extends State<MapScreen>
 
           // ── Level düğümleri ────────────────────────────────────────────
           LayoutBuilder(builder: (ctx, constraints) {
+            final bottomPad = MediaQuery.of(ctx).padding.bottom;
             return Stack(
               children: List.generate(10, (i) {
                 final level = i + 1;
                 final pos = _levelPos[i];
                 final x = pos.dx * constraints.maxWidth;
-                final y = pos.dy * constraints.maxHeight;
+                final y = pos.dy * constraints.maxHeight - (i == 0 ? bottomPad + 28 : 0);
                 return Positioned(
                   left: x - 28,
                   top: y - 28,

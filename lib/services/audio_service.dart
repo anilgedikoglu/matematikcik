@@ -11,6 +11,12 @@ class AudioService {
   static Future<void> init() async {
     _enabled = await SaveService.soundEnabled();
     await _bg.setReleaseMode(ReleaseMode.loop);
+    // Sfx sesi bg müziği durdurmadan üstüne çalsın
+    await _sfx.setAudioContext(AudioContext(
+      android: AudioContextAndroid(
+        audioFocus: AndroidAudioFocus.gainTransientMayDuck,
+      ),
+    ));
   }
 
   static void setEnabled(bool val) {

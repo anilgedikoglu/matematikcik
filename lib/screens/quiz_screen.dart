@@ -43,6 +43,7 @@ class QuizScreen extends StatefulWidget {
 class _QuizScreenState extends State<QuizScreen> with TickerProviderStateMixin {
   final _rng = Random();
   late List<Question> _questions;
+  late int _childIndex; // oyun boyunca sabit karakter indeksi (1-4)
   int  _index  = 0;
   int  _score  = 0;
   String _input = '';
@@ -60,6 +61,7 @@ class _QuizScreenState extends State<QuizScreen> with TickerProviderStateMixin {
   void initState() {
     super.initState();
     _questions = generateLevel(widget.level, _rng);
+    _childIndex = _rng.nextInt(4) + 1;
     AudioService.playGameMusic(); // bölüm başında random müzik seç
 
     _fbCtrl = AnimationController(
@@ -127,6 +129,7 @@ class _QuizScreenState extends State<QuizScreen> with TickerProviderStateMixin {
   }
 
   Future<void> _advanceAfterFeedback({required bool correct}) async {
+    _childIndex = _rng.nextInt(4) + 1;
     setState(() => _fb = correct ? _FB.correct : _FB.wrong);
     _fbCtrl.forward(from: 0);
     if (correct) {
@@ -135,7 +138,7 @@ class _QuizScreenState extends State<QuizScreen> with TickerProviderStateMixin {
       _shakeCtrl.forward(from: 0);
     }
 
-    await Future.delayed(const Duration(milliseconds: 900));
+    await Future.delayed(Duration(milliseconds: correct ? 900 : 2000));
     if (!mounted) return;
 
     if (!correct) {
@@ -412,17 +415,11 @@ class _QuizScreenState extends State<QuizScreen> with TickerProviderStateMixin {
 
   Widget _buildFeedbackBadge() {
     final ok = _fb == _FB.correct;
-    final c = ok ? _C.green : _C.red;
-    return Container(
-      width: 110, height: 110,
-      decoration: BoxDecoration(
-        color: c, shape: BoxShape.circle,
-        boxShadow: [BoxShadow(
-            color: c.withValues(alpha: 0.45), blurRadius: 24, spreadRadius: 4)],
-      ),
-      child: Icon(ok ? Icons.check_rounded : Icons.close_rounded,
-          color: Colors.white, size: 68),
-    );
+    final asset = ok
+        ? 'assets/cocukgood$_childIndex.png'
+        : 'assets/cocukbad$_childIndex.png';
+    final size = ok ? 192.0 : 208.0;
+    return Image.asset(asset, width: size, height: size, fit: BoxFit.contain);
   }
 
   // ── Numpad ───────────────────────────────────────────────────────────
