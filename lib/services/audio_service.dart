@@ -43,7 +43,7 @@ class AudioService {
     try {
       await _bg.stop();
       await _bg.setReleaseMode(ReleaseMode.loop);
-      await _bg.play(AssetSource('sounds/yol.wav'));
+      await _bg.play(AssetSource('sounds/yol.mp3'));
     } catch (_) {}
   }
 
@@ -67,14 +67,14 @@ class AudioService {
   /// Doğru cevapta tik sesi
   static Future<void> playCorrect() async {
     if (!_enabled) return;
-    try { await _sfx.play(AssetSource('sounds/dogru.wav')); } catch (_) {}
+    try { await _sfx.play(AssetSource('sounds/dogru.mp3')); } catch (_) {}
   }
 
   /// Oyun bitti ekranında — bg müziği durur
   static Future<void> playGameOver() async {
     try { await _bg.stop(); } catch (_) {}
     if (!_enabled) return;
-    try { await _sfx.play(AssetSource('sounds/oyunbitti.wav')); } catch (_) {}
+    try { await _sfx.play(AssetSource('sounds/oyunbitti.mp3')); } catch (_) {}
   }
 
   /// Sorular arası geçiş tıklaması
