@@ -81,11 +81,20 @@ flutter build appbundle --release
 - `device_preview` (disabled)
 
 ## GitHub
-- Remote: `origin` → `https://github.com/anilgedikoglu/matematikcik` (veya benzeri)
+- Remote: `origin` → `https://github.com/anilgedikoglu/matematikcik`
 - Worktree branch: `claude/gracious-borg-bd0353`
-- app-ads.txt master branch'te: `https://raw.githubusercontent.com/...` — Play Console "Website" alanına GitHub Pages URL'i girilmeli
+
+## app-ads.txt Kurulumu (TAMAMLANDI)
+- **Doğru domain:** `https://anilgedikoglu.github.io/app-ads.txt` (kök dizin şart, alt klasör çalışmıyor)
+- **GitHub repo:** `anilgedikoglu/anilgedikoglu.github.io` — bu özel user pages reposu, sadece bu repo kök domain'de yayınlanıyor
+- **İçerik:** `google.com, pub-6470338276121414, DIRECT, f08c47fec0942fa0`
+- **Play Console web sitesi (her iki uygulama için):** `https://anilgedikoglu.github.io`
+- Bu tek dosya hem Matematikcik hem Oyuncu Dükkanı'nı kapsar — publisher ID bazlı çalışır, uygulama bazlı değil
+- Matematikcik için ayrıca `github.com/anilgedikoglu/matematikcik` main branch'inde de app-ads.txt var (gereksiz ama zararsız)
+- Oyuncu Dükkanı için `github.com/anilgedikoglu/oyuncu_dukkani` main branch'inde de var (aynı şekilde)
+- AdMob doğrulaması 24-48 saat içinde otomatik tamamlanır
 
 ## Yapılacaklar / Hatırlatmalar
-- Play Console > Uygulama içeriği > Reklam kimliği: "Reklam veya pazarlama" seçildi, kaydedilmeli
 - AdMob "İnceleme gerekli" / "Doğrulanmadı" uyarıları normaldir, 1-3 gün içinde çözülür
 - Bir sonraki Play Store yüklemesinde version code +4 veya üzeri kullanılmalı
+- Play Console > Uygulama içeriği > Reklam kimliği: "Reklam veya pazarlama" seçili
