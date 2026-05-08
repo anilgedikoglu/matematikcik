@@ -2,17 +2,20 @@
 
 ## Genel Bilgi
 - Flutter uygulaması, Android (Play Store'da yayında)
-- Paket adı: `com.example.matematikcik` (AndroidManifest'te kontrol et)
-- Sürüm: `1.0.1+3` (pubspec.yaml) — Play Store'a yüklenen son AAB bu sürüm
-- Play Store'da önceki sürüm kodları 1 ve 2 kullanıldı; bir sonraki build için +4 veya üzeri kullanılmalı
+- Paket adı: `com.matematikcik.app` (build.gradle.kts'te doğrulandı)
+- **Son yüklenen sürüm: `1.0.2+4`** — çocuk uyumu düzeltmesiyle Play Store'a gönderildi
+- Play Store'da kullanılan version code'lar: 1, 2, 3, 4 — bir sonraki build için +5 veya üzeri kullanılmalı
+- Uygulama Google Play'den "Inaccurate Target Audience" nedeniyle bir kez reddedildi; hedef kitle 13 yaş altı yapıldı ve AdMob child-directed ayarları eklendi
 
 ## AdMob Bilgileri
 - Publisher ID: `pub-6470338276121414`
 - App ID: `ca-app-pub-6470338276121414~5204339767`
 - Interstitial Ad Unit ID: `ca-app-pub-6470338276121414/3561369465`
-- app-ads.txt dosyası: `C:/src/matematikcik/app-ads.txt` — master branch'e commit edildi
 - AdMob'da reklam kimliği kullanım beyanı: **Reklam veya pazarlama** seçildi
 - Reklam mantığı: her 3 yanlış cevapta 1 interstitial, kapatılana kadar beklenir (Completer kullanılır)
+- **Çocuk uyumu (v1.0.2+4'te eklendi):** `ad_service.dart` içinde `initialize()` öncesinde:
+  - `tagForChildDirectedTreatment: TagForChildDirectedTreatment.yes`
+  - `maxAdContentRating: MaxAdContentRating.g`
 
 ## Keystore / İmzalama
 - Keystore: `C:/src/matematikcik/android/matematikcik-release.jks`
@@ -96,5 +99,7 @@ flutter build appbundle --release
 
 ## Yapılacaklar / Hatırlatmalar
 - AdMob "İnceleme gerekli" / "Doğrulanmadı" uyarıları normaldir, 1-3 gün içinde çözülür
-- Bir sonraki Play Store yüklemesinde version code +4 veya üzeri kullanılmalı
+- Bir sonraki Play Store yüklemesinde version code **+5 veya üzeri** kullanılmalı
 - Play Console > Uygulama içeriği > Reklam kimliği: "Reklam veya pazarlama" seçili
+- Play Console > Data Safety: AdMob'un Advertising ID topladığını beyan et
+- flutter binary tam path: `C:/Users/AG/Documents/Downloads/urasokul/flutter_windows_3.29.2-stable/flutter/bin/flutter`
