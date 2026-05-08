@@ -12,6 +12,13 @@ class AdService {
   static const int _adsEvery = 3;
 
   static Future<void> init() async {
+    // Çocuklara yönelik uygulama: child-directed treatment + max G rating
+    await MobileAds.instance.updateRequestConfiguration(
+      RequestConfiguration(
+        tagForChildDirectedTreatment: TagForChildDirectedTreatment.yes,
+        maxAdContentRating: MaxAdContentRating.g,
+      ),
+    );
     await MobileAds.instance.initialize();
     _load();
   }
