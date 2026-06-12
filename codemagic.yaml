@@ -48,11 +48,19 @@ workflows:
           echo "$CERTIFICATE_PRIVATE_KEY" | base64 --decode | tr -d '\r' > /tmp/cert_key.pem
           KEY_SIZE=$(wc -c < /tmp/cert_key.pem)
           echo "✓ Decoded key dosya boyutu: $KEY_SIZE byte"
+          echo "Key formatı: $(head -1 /tmp/cert_key.pem)"
           if [ "$KEY_SIZE" -lt 100 ]; then
             echo "❌ Decoded key çok küçük, base64 hatalı olabilir"
-            head -3 /tmp/cert_key.pem
             exit 1
           fi
+          # PKCS#8 → RSA traditional dönüşümü (BEGIN PRIVATE KEY → BEGIN RSA PRIVATE KEY)
+          if openssl pkey -in /tmp/cert_key.pem -traditional -out /tmp/cert_key_rsa.pem 2>/dev/null; then
+            mv /tmp/cert_key_rsa.pem /tmp/cert_key.pem
+            echo "✓ PKCS#8 → RSA formatına dönüştürüldü"
+          else
+            echo "ℹ️ Dönüşüm gerekmedi (zaten RSA formatında)"
+          fi
+          echo "Son key formatı: $(head -1 /tmp/cert_key.pem)"
           app-store-connect fetch-signing-files \
             "$BUNDLE_ID" \
             --type IOS_APP_STORE \
