@@ -55,9 +55,6 @@
 	<!-- AdMob iOS App ID -->
 	<key>GADApplicationIdentifier</key>
 	<string>ca-app-pub-6470338276121414~6484112907</string>
-	<!-- AdMob ATT (App Tracking Transparency) — iOS 14.5+ kişiselleştirilmiş reklam için izin -->
-	<key>NSUserTrackingUsageDescription</key>
-	<string>Bu izin, size daha alakalı reklamlar gösterilmesi için kullanılır.</string>
 	<!-- SKAdNetwork (AdMob için Google'ın güncel listesi) -->
 	<key>SKAdNetworkItems</key>
 	<array>
