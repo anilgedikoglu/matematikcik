@@ -45,7 +45,7 @@ workflows:
           fi
           echo "✓ CERTIFICATE_PRIVATE_KEY uzunluğu: ${#CERTIFICATE_PRIVATE_KEY} karakter"
           # Private key'i base64'ten decode edip dosyaya yaz
-          echo "$CERTIFICATE_PRIVATE_KEY" | base64 --decode > /tmp/cert_key.pem
+          echo "$CERTIFICATE_PRIVATE_KEY" | base64 --decode | tr -d '\r' > /tmp/cert_key.pem
           KEY_SIZE=$(wc -c < /tmp/cert_key.pem)
           echo "✓ Decoded key dosya boyutu: $KEY_SIZE byte"
           if [ "$KEY_SIZE" -lt 100 ]; then
