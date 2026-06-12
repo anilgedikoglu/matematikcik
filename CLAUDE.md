@@ -9,8 +9,10 @@
 
 ## AdMob Bilgileri
 - Publisher ID: `pub-6470338276121414`
-- App ID: `ca-app-pub-6470338276121414~5204339767`
-- Interstitial Ad Unit ID: `ca-app-pub-6470338276121414/3561369465`
+- **Android** App ID: `ca-app-pub-6470338276121414~5204339767`
+- **iOS** App ID: `ca-app-pub-6470338276121414~6484112907`
+- **Android** Interstitial Ad Unit ID: `ca-app-pub-6470338276121414/3561369465`
+- **iOS** Interstitial Ad Unit ID: ⚠️ TEST ID (`ca-app-pub-3940256099942544/4411468910`) — AdMob'da iOS unit oluşturup `ad_service.dart`'ı güncelle
 - AdMob'da reklam kimliği kullanım beyanı: **Reklam veya pazarlama** seçildi
 - Reklam mantığı: her 3 yanlış cevapta 1 interstitial, kapatılana kadar beklenir (Completer kullanılır)
 - **Çocuk uyumu (v1.0.2+4'te eklendi):** `ad_service.dart` içinde `initialize()` öncesinde:
@@ -97,9 +99,44 @@ flutter build appbundle --release
 - Oyuncu Dükkanı için `github.com/anilgedikoglu/oyuncu_dukkani` main branch'inde de var (aynı şekilde)
 - AdMob doğrulaması 24-48 saat içinde otomatik tamamlanır
 
+## iOS Yapılandırması (Codemagic)
+
+- **Bundle ID**: `com.matematikcik.app` (Android ile aynı — project.pbxproj'te güncellendi)
+- **Display Name**: `Matematikçik` (Info.plist `CFBundleDisplayName`)
+- **Deployment Target**: 13.0 (AdMob için minimum)
+- **Team ID**: `SN5Y726ZKF` (FUTURASTIC TEKNOLOJI...)
+- **AdMob iOS App ID**: `ca-app-pub-6470338276121414~6484112907` (Info.plist `GADApplicationIdentifier`)
+- **AdMob iOS Interstitial Unit ID**: ⚠️ TEST ID (`ca-app-pub-3940256099942544/4411468910`) — AdMob'da iOS unit oluşturup `lib/services/ad_service.dart`'ı güncelle
+- **App Store Connect App ID** (numerik): `6779563082`
+- **ITSAppUsesNonExemptEncryption**: `false`
+- **NSUserTrackingUsageDescription**: "Bu izin, size daha alakalı reklamlar gösterilmesi için kullanılır."
+- **SKAdNetworkItems**: 44 Google SKAN ID (Info.plist'e eklendi)
+- **iOS App Icon**: `flutter_launcher_icons` ile `assets/matematikciikon.png`'den — `remove_alpha_ios: true` eklendi
+
+### Codemagic Kurulum (oyuncu_dukkani'den paylaşımlı — YENİDEN KURMAYA GEREK YOK)
+- App Store Connect API Key: **"Codemagic"** entegrasyonu (Key ID: `2M84B256CL`)
+- iOS Distribution cert: Personal Account → Code signing identities → `ios_distribution`
+- `CERTIFICATE_PRIVATE_KEY` env var: group `signing_credentials`'da (Magnus/oyuncu_dukkani ile aynı)
+- Codemagic'te matematikcik reposu eklenmeli: https://codemagic.io → Add application → matematikcik
+
+### Codemagic Workflow Tetikleme
+```bash
+# Tag ile (otomatik)
+git tag v1.0.2-ios1
+git push origin v1.0.2-ios1
+
+# YA Codemagic UI'dan manuel: Applications → matematikcik → Start new build → claude/gracious-borg-bd0353 → ios-testflight
+```
+
+### ⚠️ ATT (App Tracking Transparency)
+- `app_tracking_transparency: ^6.0.1` pubspec.yaml'a eklendi
+- `main.dart`'ta AdMob `init()`'den ÖNCE `requestTrackingAuthorization()` çağrılıyor
+- App Store Connect → Matematikçik → **App Privacy** formu doldurulmalı (oyuncu_dukkani ile aynı adımlar)
+
 ## Yapılacaklar / Hatırlatmalar
 - AdMob "İnceleme gerekli" / "Doğrulanmadı" uyarıları normaldir, 1-3 gün içinde çözülür
 - Bir sonraki Play Store yüklemesinde version code **+5 veya üzeri** kullanılmalı
 - Play Console > Uygulama içeriği > Reklam kimliği: "Reklam veya pazarlama" seçili
 - Play Console > Data Safety: AdMob'un Advertising ID topladığını beyan et
 - flutter binary tam path: `C:/Users/AG/Documents/Downloads/urasokul/flutter_windows_3.29.2-stable/flutter/bin/flutter`
+- **iOS TODO**: AdMob konsolunda iOS interstitial unit oluştur → `lib/services/ad_service.dart`'taki iOS TODO'yu gerçek ID ile güncelle
