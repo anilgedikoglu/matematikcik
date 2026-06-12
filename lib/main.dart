@@ -1,8 +1,10 @@
+import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:device_preview/device_preview.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
+import 'package:app_tracking_transparency/app_tracking_transparency.dart';
 import 'services/audio_service.dart';
 import 'services/ad_service.dart';
 import 'screens/intro_screen.dart';
@@ -12,6 +14,10 @@ void main() async {
   FlutterNativeSplash.preserve(widgetsBinding: binding);
   await SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
   await AudioService.init();
+  // ATT iznini AdMob'dan ÖNCE iste (iOS 14.5+)
+  if (Platform.isIOS) {
+    await AppTrackingTransparency.requestTrackingAuthorization();
+  }
   await AdService.init();
   runApp(
     DevicePreview(

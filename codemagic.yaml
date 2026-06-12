@@ -1,0 +1,98 @@
+# Codemagic CI/CD — Matematikçik iOS
+# https://docs.codemagic.io/yaml-quick-start/building-a-flutter-app/
+
+workflows:
+  ios-testflight:
+    name: iOS TestFlight (Otomatik)
+    instance_type: mac_mini_m2
+    max_build_duration: 60
+
+    # Codemagic UI'da Personal Account → Settings → Integrations → Developer Portal
+    # → "Codemagic" entegrasyonu (Magnus/Oyuncu Dükkanı için kuruldu, paylaşımlı)
+    integrations:
+      app_store_connect: Codemagic
+
+    environment:
+      flutter: stable
+      xcode: latest
+      cocoapods: default
+      # Variable group — Codemagic UI → App settings → Environment variables
+      groups:
+        - signing_credentials  # CERTIFICATE_PRIVATE_KEY bu grupta olmalı
+      vars:
+        APP_STORE_APP_ID: "6779563082"
+        BUNDLE_ID: "com.matematikcik.app"
+
+    triggering:
+      events:
+        - tag
+      tag_patterns:
+        - pattern: 'v*'
+          include: true
+
+    scripts:
+      - name: Initialize keychain
+        script: |
+          keychain initialize
+      - name: Fetch signing files (auto-create profile if missing)
+        script: |
+          # Debug: env var'ı kontrol et
+          if [ -z "$CERTIFICATE_PRIVATE_KEY" ]; then
+            echo "❌ HATA: CERTIFICATE_PRIVATE_KEY env var BOŞ veya yok!"
+            echo "Codemagic UI → App settings → Environment variables'a ekleyin."
+            echo "Eğer bir 'group' içine eklediyseniz, group adı YAML'daki ile eşleşmeli."
+            exit 1
+          fi
+          echo "✓ CERTIFICATE_PRIVATE_KEY uzunluğu: ${#CERTIFICATE_PRIVATE_KEY} karakter"
+          # Private key'i base64'ten decode edip dosyaya yaz
+          echo "$CERTIFICATE_PRIVATE_KEY" | base64 --decode > /tmp/cert_key.pem
+          KEY_SIZE=$(wc -c < /tmp/cert_key.pem)
+          echo "✓ Decoded key dosya boyutu: $KEY_SIZE byte"
+          if [ "$KEY_SIZE" -lt 100 ]; then
+            echo "❌ Decoded key çok küçük, base64 hatalı olabilir"
+            head -3 /tmp/cert_key.pem
+            exit 1
+          fi
+          app-store-connect fetch-signing-files \
+            "$BUNDLE_ID" \
+            --type IOS_APP_STORE \
+            --platform IOS \
+            --certificate-key=@file:/tmp/cert_key.pem \
+            --create
+      - name: Add certificates to keychain
+        script: |
+          keychain add-certificates
+      - name: Set up code signing settings on Xcode project
+        script: |
+          xcode-project use-profiles
+      - name: Flutter packages + disable SwiftPM
+        script: |
+          flutter --version
+          # google_mobile_ads CocoaPods kullanır, SwiftPM ile çakışır — kapat
+          flutter config --no-enable-swift-package-manager
+          flutter packages pub get
+      - name: Pod install
+        script: |
+          find . -name "Podfile" -execdir pod install \;
+      - name: Flutter build ipa
+        script: |
+          # Build number: HER ZAMAN Unix timestamp (saniye). Sürekli artan + asla çakışmaz.
+          # get-latest-app-store-build-number "processing" durumundakini saymıyor,
+          # bu yüzden +1 yöntemi çakışmaya yol açıyordu. Timestamp garantili çözüm.
+          BUILD_NUMBER=$(date +%s)
+          echo "Using BUILD_NUMBER=$BUILD_NUMBER"
+          flutter build ipa --release \
+            --build-name=1.0.2 \
+            --build-number=$BUILD_NUMBER \
+            --export-options-plist=/Users/builder/export_options.plist
+
+    artifacts:
+      - build/ios/ipa/*.ipa
+      - /tmp/xcodebuild_logs/*.log
+      - flutter_drive.log
+
+    publishing:
+      app_store_connect:
+        auth: integration
+        submit_to_testflight: true
+        submit_to_app_store: false
