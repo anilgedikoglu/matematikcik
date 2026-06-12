@@ -12,7 +12,8 @@
 - **Android** App ID: `ca-app-pub-6470338276121414~5204339767`
 - **iOS** App ID: `ca-app-pub-6470338276121414~6484112907`
 - **Android** Interstitial Ad Unit ID: `ca-app-pub-6470338276121414/3561369465`
-- **iOS** Interstitial Ad Unit ID: ⚠️ TEST ID (`ca-app-pub-3940256099942544/4411468910`) — AdMob'da iOS unit oluşturup `ad_service.dart`'ı güncelle
+- **iOS** Interstitial Ad Unit ID: `ca-app-pub-6470338276121414/5375921075`
+- **iOS** Rewarded Ad Unit ID: `ca-app-pub-6470338276121414/3292683216` (şimdilik kullanılmıyor)
 - AdMob'da reklam kimliği kullanım beyanı: **Reklam veya pazarlama** seçildi
 - Reklam mantığı: her 3 yanlış cevapta 1 interstitial, kapatılana kadar beklenir (Completer kullanılır)
 - **Çocuk uyumu (v1.0.2+4'te eklendi):** `ad_service.dart` içinde `initialize()` öncesinde:

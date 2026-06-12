@@ -5,9 +5,7 @@ import 'package:google_mobile_ads/google_mobile_ads.dart';
 class AdService {
   static String get _adUnitId {
     if (Platform.isIOS) {
-      // TODO: AdMob konsolunda iOS interstitial unit oluşturup buraya gerçek ID yaz
-      // Şimdilik test ID kullanılıyor
-      return 'ca-app-pub-3940256099942544/4411468910';
+      return 'ca-app-pub-6470338276121414/5375921075';
     }
     return 'ca-app-pub-6470338276121414/3561369465';
   }
