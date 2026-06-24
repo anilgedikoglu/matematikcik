@@ -105,7 +105,11 @@ class _MapScreenState extends State<MapScreen>
       setState(() => _state = newState);
 
       if (actualLevel == 60) {
-        setState(() => _showGameComplete = true);
+        await SaveService.addMacaraStar();
+        await SaveService.deleteSave();
+        final fresh = GameState.fresh();
+        await SaveService.save(fresh);
+        setState(() { _showGameComplete = true; _state = fresh; });
         Future.delayed(const Duration(seconds: 5), () {
           if (mounted) _goToMainMenu();
         });
@@ -142,7 +146,7 @@ class _MapScreenState extends State<MapScreen>
                 final pos = _levelPos[i];
                 final x = pos.dx * constraints.maxWidth;
                 final y = pos.dy * constraints.maxHeight -
-                    (i == 0 ? bottomPad + 28 : 0);
+                    (i == 0 ? bottomPad + 28 : 0) + 52;
                 return Positioned(
                   left: x - 28,
                   top: y - 28,
