@@ -8,14 +8,27 @@
 - Uygulama Google Play'den "Inaccurate Target Audience" nedeniyle bir kez reddedildi; hedef kitle 13 yaş altı yapıldı ve AdMob child-directed ayarları eklendi
 
 ## Oyun Modları (v1.0.3'te eklendi)
-- YENİ OYUN → `ModeSelectionScreen` açılır, 3 mod sunulur:
+- YENİ OYUN → `ModeSelectionScreen` açılır (düz pastel gradient arka plan, 3 mod butonuna ince kırmızı border + %10 transparan görsel), 3 mod sunulur:
   - **Macera Modu**: 60 bölüm, 6 harita arka planı. 60. bölüm bitince 1 ⭐ + save sıfırla
   - **Uzman Modu**: 50 bölüm, 5 harita arka planı. 50. bölüm bitince 1 ⭐ + save sıfırla
     - Levels 1-10: `uzmanmodubg.png`, 11-20: `uzmanmodubg2.png`, 21-30: `uzmanmodubg3.png`, 31-40: `uzmanmodubg4.png`, 41-50: `uzmanmodubg5.png`
     - Sorular: `lib/models/uzman_level_questions.dart` — 20 soru/bölüm, %80 (16/20) geçme eşiği
+    - **Macera mekanikleri uygulandı**: 3 kalp, 60sn sayaç (macera'nın 2 katı), 🐰 ilerleme çubuğu, soru kartı dikeyde ortalı/büyük punto, ortada cocukgood/kirikkalp pop-up'ı, 3 can biterse oyun bitti ekranı (`bg.png` arka plan)
   - **Çarpım Tablosu**: 1×1 - 9×9, 20 soru, 2×2 seçenek, 20/20 tam doğru → 1 ⭐
+    - **Macera mekanikleri uygulandı**: 3 kalp, 🐰 ilerleme çubuğu, ortada cocukgood/kirikkalp pop-up'ı, doğru cevapta doğru şık yeşil / yanlışta doğru şık kırmızı, 3 can biterse oyun bitti ekranı (`bg.png`)
+    - Şıklar soru başına bir kez üretilir (state'te `_choices`), her şıkta `ValueKey('$_index-$value')` (renk taşmasını önler)
+- **Quiz/oyun-bitti arka planı**: Uzman & Çarpım quiz ekranı düz pastel gradient; oyun bitti ekranları `bg.png` (harita/orman görseli kullanılmaz) — macera ile aynı
 - DEVAM ET: macera/uzman'da ilerleme varsa aktif; ikisinde birden varsa popup gösterir
 - **Reklam tüm modlarda aktif** — yanlış cevapta `AdService.onWrongAnswer()` çağrılır
+
+## Mağaza Ekran Görüntüleri (Store Screenshots)
+- Kaynak: `C:\Users\AG\Desktop\MARKETLER İÇİN\matematikciK\previewed` (7 adet 652×1413 telefon screenshot)
+- Çıktı: `...\matematikciK\store_screenshots\` altında 4 klasör, oran korunarak (esnetmeden) dolgulu:
+  - `ios_telefon`: **1242×2688** (iPhone 6.5"), pembe dolgu (RGB 255,240,245)
+  - `ios_tablet`: **2048×2732** (iPad 12.9"), **beyaz** dolgu
+  - `android_telefon`: **1080×2160** (2:1), pembe dolgu
+  - `android_tablet`: **1280×2560** (2:1), pembe dolgu
+- Üretim: PowerShell + System.Drawing (HighQualityBicubic, JPEG q92). iPhone oranı kaynakla birebir; Google Play 2:1 limiti, iPad 0.75 oranı zorunlu olduğu için dolgu gerekti
 
 ## AdMob Bilgileri
 - Publisher ID: `pub-6470338276121414`

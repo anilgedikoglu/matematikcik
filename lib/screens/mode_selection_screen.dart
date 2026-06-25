@@ -55,12 +55,17 @@ class _ModeSelectionScreenState extends State<ModeSelectionScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Material(
-      child: Stack(
-        fit: StackFit.expand,
-        children: [
-          Image.asset('assets/bg2.png', fit: BoxFit.cover),
-          SafeArea(
+    return Scaffold(
+      body: Container(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            stops: [0.0, 0.5, 1.0],
+            colors: [Color(0xFFFFF0F5), Color(0xFFEDF4FF), Color(0xFFFFF8E7)],
+          ),
+        ),
+        child: SafeArea(
             child: Column(
               children: [
                 // Back button
@@ -103,8 +108,7 @@ class _ModeSelectionScreenState extends State<ModeSelectionScreen> {
                 const Spacer(flex: 1),
               ],
             ),
-          ),
-        ],
+        ),
       ),
     );
   }
@@ -124,11 +128,15 @@ class _ModeSelectionScreenState extends State<ModeSelectionScreen> {
             width: 180, height: 180,
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(32),
+              border: Border.all(color: const Color(0xFFFF3B30), width: 2),
               boxShadow: const [BoxShadow(color: Colors.black38, blurRadius: 20, offset: Offset(0, 8))],
             ),
             child: ClipRRect(
-              borderRadius: BorderRadius.circular(32),
-              child: Image.asset(asset, fit: BoxFit.cover),
+              borderRadius: BorderRadius.circular(30),
+              child: Opacity(
+                opacity: 0.9,
+                child: Image.asset(asset, fit: BoxFit.cover),
+              ),
             ),
           ),
           const SizedBox(height: 10),
@@ -142,8 +150,7 @@ class _ModeSelectionScreenState extends State<ModeSelectionScreen> {
             style: const TextStyle(
               fontSize: 20,
               fontWeight: FontWeight.w800,
-              color: Colors.white,
-              shadows: [Shadow(color: Colors.black54, blurRadius: 4)],
+              color: Color(0xFF7C5CBF),
             ),
           ),
         ],
