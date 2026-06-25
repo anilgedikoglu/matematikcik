@@ -4,7 +4,8 @@
 - Flutter uygulaması, Android (Play Store'da yayında), iOS (Codemagic ile TestFlight'a gönderilecek)
 - Paket adı: `com.matematikcik.app` (build.gradle.kts'te doğrulandı)
 - **Son yüklenen sürüm: `1.0.2+4`** — çocuk uyumu düzeltmesiyle Play Store'a gönderildi
-- Play Store'da kullanılan version code'lar: 1, 2, 3, 4 — **bir sonraki build için +5 veya üzeri kullanılmalı**
+- **Hazırlanan yeni sürüm: `1.0.3+5`** — 3 mod sistemi (Macera/Uzman/Çarpım), pubspec.yaml'da ayarlı
+- Play Store'da kullanılan version code'lar: 1, 2, 3, 4 — **bir sonraki build için +6 veya üzeri kullanılmalı**
 - Uygulama Google Play'den "Inaccurate Target Audience" nedeniyle bir kez reddedildi; hedef kitle 13 yaş altı yapıldı ve AdMob child-directed ayarları eklendi
 
 ## Oyun Modları (v1.0.3'te eklendi)
@@ -143,7 +144,8 @@ flutter build appbundle --release
 - **Deployment Target**: 13.0 (AdMob için minimum)
 - **Team ID**: `SN5Y726ZKF` (FUTURASTIC TEKNOLOJI...)
 - **AdMob iOS App ID**: `ca-app-pub-6470338276121414~6484112907` (Info.plist `GADApplicationIdentifier`)
-- **AdMob iOS Interstitial Unit ID**: ⚠️ TEST ID (`ca-app-pub-3940256099942544/4411468910`) — AdMob'da iOS unit oluşturup `lib/services/ad_service.dart`'ı güncelle
+- **AdMob iOS Interstitial Unit ID**: ✅ GERÇEK ID `ca-app-pub-6470338276121414/5375921075` (Matgecis) — `lib/services/ad_service.dart:8`'de girili
+- **AdMob iOS Rewarded Unit ID**: `ca-app-pub-6470338276121414/3292683216` (matrewarded — şimdilik kullanılmıyor)
 - **App Store Connect App ID** (numerik): `6779563082`
 - **ITSAppUsesNonExemptEncryption**: `false`
 - **ATT kaldırıldı**: `app_tracking_transparency` paketi ve izin akışı çıkarıldı — çocuk uygulaması tracking yapmıyor
@@ -171,4 +173,4 @@ git push origin v1.0.3-ios1
 - Play Console > Uygulama içeriği > Reklam kimliği: "Reklam veya pazarlama" seçili
 - Play Console > Data Safety: AdMob'un Advertising ID topladığını beyan et
 - flutter binary tam path: `C:/Users/AG/Documents/Downloads/urasokul/flutter_windows_3.29.2-stable/flutter/bin/flutter`
-- **iOS TODO**: AdMob konsolunda iOS interstitial unit oluştur → `lib/services/ad_service.dart`'taki iOS TODO'yu gerçek ID ile güncelle
+- ✅ iOS AdMob interstitial gerçek ID girildi (`5375921075`) — `ad_service.dart`'ta TODO kalmadı
