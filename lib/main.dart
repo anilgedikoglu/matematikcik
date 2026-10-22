@@ -5,7 +5,7 @@ import 'package:device_preview/device_preview.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'services/audio_service.dart';
 import 'services/ad_service.dart';
-import 'screens/intro_screen.dart';
+import 'screens/menu_screen.dart';
 
 void main() async {
   final binding = WidgetsFlutterBinding.ensureInitialized();
@@ -40,7 +40,7 @@ class MatematikcikApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFFFF6B9D)),
         useMaterial3: true,
       ),
-      home: const IntroScreen(),
+      home: const MenuScreen(),
     );
   }
 }
