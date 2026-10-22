@@ -7,6 +7,17 @@ class SaveService {
   static const _keyExists   = 'save_exists';
   static const _keySound    = 'sound_enabled';
 
+  // Uzman Modu
+  static const _keyUzmanUnlocked = 'uzman_unlocked_level';
+  static const _keyUzmanScores   = 'uzman_level_scores';
+
+  // Çarpım Tablosu
+  static const _keyCarpimStars = 'carpim_stars';
+
+  // Mod tamamlama yıldızları
+  static const _keyMaceraStars = 'macera_stars';
+  static const _keyUzmanStars  = 'uzman_stars';
+
   static Future<bool> hasSave() async {
     final p = await SharedPreferences.getInstance();
     return p.getBool(_keyExists) ?? false;
@@ -53,5 +64,75 @@ class SaveService {
     await p.remove(_keyExists);
     await p.remove(_keyUnlocked);
     await p.remove(_keyScores);
+  }
+
+  // ── Uzman Modu ────────────────────────────────────────────────────────────
+
+  static Future<int> loadUzmanLevel() async {
+    final p = await SharedPreferences.getInstance();
+    return p.getInt(_keyUzmanUnlocked) ?? 1;
+  }
+
+  static Future<Map<int, int>> loadUzmanScores() async {
+    final p = await SharedPreferences.getInstance();
+    final raw = p.getStringList(_keyUzmanScores) ?? [];
+    final scores = <int, int>{};
+    for (final entry in raw) {
+      final parts = entry.split(':');
+      if (parts.length == 2) {
+        final lvl   = int.tryParse(parts[0]);
+        final score = int.tryParse(parts[1]);
+        if (lvl != null && score != null) scores[lvl] = score;
+      }
+    }
+    return scores;
+  }
+
+  static Future<void> saveUzmanProgress(int unlockedLevel, Map<int, int> scores) async {
+    final p = await SharedPreferences.getInstance();
+    await p.setInt(_keyUzmanUnlocked, unlockedLevel);
+    final raw = scores.entries.map((e) => '${e.key}:${e.value}').toList();
+    await p.setStringList(_keyUzmanScores, raw);
+  }
+
+  static Future<void> deleteUzmanSave() async {
+    final p = await SharedPreferences.getInstance();
+    await p.remove(_keyUzmanUnlocked);
+    await p.remove(_keyUzmanScores);
+  }
+
+  // ── Çarpım Tablosu ────────────────────────────────────────────────────────
+
+  static Future<int> loadCarpimStars() async {
+    final p = await SharedPreferences.getInstance();
+    return p.getInt(_keyCarpimStars) ?? 0;
+  }
+
+  static Future<void> addCarpimStar() async {
+    final p = await SharedPreferences.getInstance();
+    final current = p.getInt(_keyCarpimStars) ?? 0;
+    await p.setInt(_keyCarpimStars, current + 1);
+  }
+
+  // ── Mod tamamlama yıldızları ──────────────────────────────────────────────
+
+  static Future<int> loadMaceraStars() async {
+    final p = await SharedPreferences.getInstance();
+    return p.getInt(_keyMaceraStars) ?? 0;
+  }
+
+  static Future<void> addMacaraStar() async {
+    final p = await SharedPreferences.getInstance();
+    await p.setInt(_keyMaceraStars, (p.getInt(_keyMaceraStars) ?? 0) + 1);
+  }
+
+  static Future<int> loadUzmanStars() async {
+    final p = await SharedPreferences.getInstance();
+    return p.getInt(_keyUzmanStars) ?? 0;
+  }
+
+  static Future<void> addUzmanStar() async {
+    final p = await SharedPreferences.getInstance();
+    await p.setInt(_keyUzmanStars, (p.getInt(_keyUzmanStars) ?? 0) + 1);
   }
 }
