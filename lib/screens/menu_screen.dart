@@ -1,11 +1,31 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../services/save_service.dart';
 import '../services/audio_service.dart';
 import '../models/game_state.dart';
+import '../widgets/candy_glass_button.dart';
 import 'map_screen.dart';
 import 'uzman_map_screen.dart';
 import 'mode_selection_screen.dart';
 import 'settings_screen.dart';
+
+// ─── 🎮 DİĞER OYUNLAR ────────────────────────────────────────────────────────
+// Ana menüdeki "Diğer Oyunlar": geliştiricinin mağaza sayfasını açar
+// (diğer Futurastic oyunlarıyla aynı davranış).
+class DigerOyunlar {
+  static final Uri _ios =
+      Uri.parse('https://apps.apple.com/developer/id1612979370');
+  static final Uri _android = Uri.parse(
+      'https://play.google.com/store/apps/developer?id=Futurastic+Teknoloji+Limited+%C5%9Eirketi');
+
+  static Future<void> ac() async {
+    final uri = Platform.isIOS ? _ios : _android;
+    try {
+      await launchUrl(uri, mode: LaunchMode.externalApplication);
+    } catch (_) {}
+  }
+}
 
 class MenuScreen extends StatefulWidget {
   const MenuScreen({super.key});
@@ -251,15 +271,31 @@ class _MenuScreenState extends State<MenuScreen>
                     },
                   ),
                 const Spacer(flex: 1),
-                _menuButton('YENİ OYUN', const Color(0xFFFF6B9D), _newGame),
-                const SizedBox(height: 16),
-                _menuButton(
-                  'DEVAM ET',
-                  _hasAnyProgress ? const Color(0xFF56C068) : const Color(0xFFD4C5E2),
-                  _hasAnyProgress ? _continueGame : null,
+                CandyGlassButton(
+                  label: 'YENİ OYUN',
+                  color: const Color(0xFFFF6B9D),
+                  onTap: _newGame,
                 ),
                 const SizedBox(height: 16),
-                _menuButton('AYARLAR', const Color(0xFF4BBEF5), _settings),
+                CandyGlassButton(
+                  label: 'DEVAM ET',
+                  color: _hasAnyProgress
+                      ? const Color(0xFF56C068)
+                      : const Color(0xFFBCA9D6),
+                  onTap: _hasAnyProgress ? _continueGame : null,
+                ),
+                const SizedBox(height: 16),
+                CandyGlassButton(
+                  label: 'AYARLAR',
+                  color: const Color(0xFF4BBEF5),
+                  onTap: _settings,
+                ),
+                const SizedBox(height: 16),
+                CandyGlassButton(
+                  label: 'DİĞER OYUNLAR',
+                  color: const Color(0xFF9B6BD6),
+                  onTap: () => DigerOyunlar.ac(),
+                ),
                 const Spacer(flex: 2),
               ],
             ),
@@ -288,30 +324,5 @@ class _MenuScreenState extends State<MenuScreen>
     );
   }
 
-  Widget _menuButton(String label, Color color, VoidCallback? onTap) {
-    return GestureDetector(
-      onTap: onTap,
-      child: AnimatedOpacity(
-        duration: const Duration(milliseconds: 150),
-        opacity: onTap == null ? 0.45 : 1.0,
-        child: Container(
-          width: 240,
-          height: 60,
-          decoration: BoxDecoration(
-            color: color,
-            borderRadius: BorderRadius.circular(30),
-            boxShadow: onTap == null
-                ? []
-                : [BoxShadow(color: color.withValues(alpha: 0.4), blurRadius: 12, offset: const Offset(0, 5))],
-          ),
-          child: Center(
-            child: Text(
-              label,
-              style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w800, color: Colors.white, letterSpacing: 1),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
+  // (Eski _menuButton kaldırıldı — yerini CandyGlassButton aldı.)
 }
