@@ -7,8 +7,8 @@ Güncel: 2026-11-10
 - **Ana menü (candy liquid-glass):** `lib/widgets/candy_glass_button.dart` eklendi (Magnus cam temasından: frosted blur + candy jöle tint + glossy üst cila + yanardöner kenar + çift renkli gölge + bas-küçül). `menu_screen.dart`'taki 3 buton bununla değişti; **alta "DİĞER OYUNLAR"** eklendi (url_launcher → geliştirici mağaza sayfası). `url_launcher: ^6.3.1` eklendi. `flutter analyze` temiz (3a109a2).
 - `.metadata` takibe alındı, CLAUDE.md/AGENTS.md sürüm bilgisi 1.0.4+7'ye güncellendi (f2ec8f7).
 
-## Karar bekleyen (Anıl verecek — ben vermem)
-- **GÜVENLİK:** Şifre `cc5db51` (v1.0.1+3) commit'inden beri PUBLIC repo geçmişinde duruyor; tip'te silmek geçmişi geri almaz. Seçenekler: (A) geçmiş temizleme (git-filter-repo/BFG + force-push), (B) Play Console'dan **upload key sıfırlama** + yeni keystore (asıl çözüm — sızıntıyı geçersiz kılar). `.jks` hiç sızmadığı için tek başına şifre imza için yetersiz = risk düşük, ama B önerilir. Anıl seçecek.
+## Güvenlik kararı (VERİLDİ — 2026-11-10)
+- Anıl: **"şimdilik bırak".** `.jks` hiç sızmadığı için risk düşük; tip redaksiyonu + `.gitignore` koruması yeterli kabul edildi. Geçmiş temizleme ve upload key rotasyonu **yapılmayacak** (tekrar gündeme getirme). Şifre PUBLIC geçmişte (cc5db51'den beri) kalıyor — bilinçli kabul.
 
 ## Yarım kalan
 - **Play inceleme sonucu:** Bekleniyor (Anıl'ın Play Console girişi gerek; ben giremiyorum). Politika durumu: Play Console → Matematikçik → Politika durumu.
