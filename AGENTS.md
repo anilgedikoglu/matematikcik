@@ -3,9 +3,10 @@
 ## Genel Bilgi
 - Flutter uygulaması, Android (Play Store'da yayında), iOS (Codemagic ile TestFlight'a gönderilecek)
 - Paket adı: `com.matematikcik.app` (build.gradle.kts'te doğrulandı)
-- **Son yüklenen sürüm: `1.0.2+4`** — çocuk uyumu düzeltmesiyle Play Store'a gönderildi
-- **Hazırlanan yeni sürüm: `1.0.3+6`** — 3 mod sistemi (Macera/Uzman/Çarpım), pubspec.yaml'da ayarlı (+5 Play Store'da "zaten kullanıldı" hatası verdi)
-- Play Store'da kullanılan version code'lar: 1, 2, 3, 4, 5 — **bir sonraki build için +7 veya üzeri kullanılmalı**
+- **Güncel sürüm: `1.0.4+7`** — 3 mod sistemi (Macera/Uzman/Çarpım) + Android API 36 hedefi. Play'e yüklendi.
+  - 8 Kasım 2026: Play "Meta Veri: Birinci düzey bağlantılar" gerekçesiyle reddetti (mağaza Web sitesi stüdyo sitesine → fal/tarot uygulamalarına gidiyordu; uygulama 13 yaş altı).
+  - 10 Kasım: Web sitesi `https://futurastictech.github.io/play/matematikcik/` yapıldı, 7 (1.0.4) yeniden incelemeye gönderildi (kod değişmedi). Sonuç bekleniyor; Play'de eski sürüm yayında.
+- Play Store'da kullanılan version code'lar: 1–7 — **bir sonraki build için +8 veya üzeri kullanılmalı**
 - Uygulama Google Play'den "Inaccurate Target Audience" nedeniyle bir kez reddedildi; hedef kitle 13 yaş altı yapıldı ve AdMob child-directed ayarları eklendi
 
 ## Oyun Modları (v1.0.3'te eklendi)
