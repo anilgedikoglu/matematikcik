@@ -5,6 +5,8 @@ Güncel: 2026-11-10
 ## Ne yapıldı
 - **Güvenlik (kısmi):** İmza anahtarı şifresi `CLAUDE.md` + `AGENTS.md`'den silindi (master 8f86c76, push edildi). `.jks` ve `key.properties` ne tracked ne de geçmişte — doğrulandı. `.gitignore` eklendi: `key.properties`, `*.jks`, `*.keystore`, `*.p8` artık repoya giremez (f2ec8f7).
 - **Ana menü (candy liquid-glass):** `lib/widgets/candy_glass_button.dart` eklendi (Magnus cam temasından: frosted blur + candy jöle tint + glossy üst cila + yanardöner kenar + çift renkli gölge + bas-küçül). `menu_screen.dart`'taki 3 buton bununla değişti; **alta "DİĞER OYUNLAR"** eklendi (url_launcher → geliştirici mağaza sayfası). `url_launcher: ^6.3.1` eklendi. `flutter analyze` temiz (3a109a2).
+- **Yeni ana menü arka planı:** `assets/anamenubg.jpg` (Gökkuşağı Matematik Diyarı, başlık gömülü, 223KB). Ayrı `mat1.png` logo kaldırıldı; içerik başlığın altındaki açık alana yerleşti. `bg.png` değişmedi (f3c7621).
+- **Ayarlar liquid-glass düğme:** `lib/widgets/glass_toggle.dart` — Ses Efektleri'ndeki Material Switch yerine kayan cam sürgü (mavi kapalı→amber açık, AÇIK/KAPALI). analyze temiz (5581b30).
 - `.metadata` takibe alındı, CLAUDE.md/AGENTS.md sürüm bilgisi 1.0.4+7'ye güncellendi (f2ec8f7).
 
 ## Güvenlik kararı (VERİLDİ — 2026-11-10)
