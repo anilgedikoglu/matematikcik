@@ -2,27 +2,30 @@
 
 Güncel: 2026-11-10
 
-## Ne yapıldı
-- **Güvenlik (kısmi):** İmza anahtarı şifresi `CLAUDE.md` + `AGENTS.md`'den silindi (master 8f86c76, push edildi). `.jks` ve `key.properties` ne tracked ne de geçmişte — doğrulandı. `.gitignore` eklendi: `key.properties`, `*.jks`, `*.keystore`, `*.p8` artık repoya giremez (f2ec8f7).
-- **Ana menü (candy liquid-glass):** `lib/widgets/candy_glass_button.dart` eklendi (Magnus cam temasından: frosted blur + candy jöle tint + glossy üst cila + yanardöner kenar + çift renkli gölge + bas-küçül). `menu_screen.dart`'taki 3 buton bununla değişti; **alta "DİĞER OYUNLAR"** eklendi (url_launcher → geliştirici mağaza sayfası). `url_launcher: ^6.3.1` eklendi. `flutter analyze` temiz (3a109a2).
-- **Yeni ana menü arka planı:** `assets/anamenubg.jpg` (Gökkuşağı Matematik Diyarı, başlık gömülü, 223KB). Ayrı `mat1.png` logo kaldırıldı; içerik başlığın altındaki açık alana yerleşti. `bg.png` değişmedi (f3c7621).
-- **Ayarlar liquid-glass düğme:** `lib/widgets/glass_toggle.dart` — Ses Efektleri'ndeki Material Switch yerine kayan cam sürgü (mavi kapalı→amber açık, AÇIK/KAPALI). analyze temiz (5581b30).
-- `.metadata` takibe alındı, CLAUDE.md/AGENTS.md sürüm bilgisi 1.0.4+7'ye güncellendi (f2ec8f7).
+## Sürüm
+- **1.0.4+7** yayında (eski sürüm). 10 Kasım'da web sitesi `futurastictech.github.io/play/matematikcik/` yapılıp Play'e yeniden gönderildi — **inceleme sonucu bekleniyor**.
+- ⚠️ Aşağıdaki büyük UI/navigasyon değişiklikleri **henüz mağazaya gönderilmedi**; sonraki build +8 version code ister.
 
-## Güvenlik kararı (VERİLDİ — 2026-11-10)
-- Anıl: **"şimdilik bırak".** `.jks` hiç sızmadığı için risk düşük; tip redaksiyonu + `.gitignore` koruması yeterli kabul edildi. Geçmiş temizleme ve upload key rotasyonu **yapılmayacak** (tekrar gündeme getirme). Şifre PUBLIC geçmişte (cc5db51'den beri) kalıyor — bilinçli kabul.
+## Bu oturumda yapılan büyük yeniden-tasarım (hepsi master'da)
+Candy / liquid-glass tema + navigasyon elden geçirildi:
+- **Ana menü** (`menu_screen.dart`): sadece 3 **candy mod karesi** (Macera/Uzman/Çarpım, ikon+ad+ilerleme). Tıklayınca o moda girer (Macera/Uzman kaldığı yerden). Başarı kartı + eski butonlar kaldırıldı. Arka plan `assets/anamenubg.jpg` (başlık gömülü).
+- **Alt kompartman** (`widgets/candy_bottom_bar.dart` + `global_bottom_bar.dart`): **her ekranda** altta — Ana Menü | **Play=devam** | Ayarlar. Köşe geri tuşları **tüm ekranlardan kaldırıldı**.
+- **Ayarlar** (`settings_screen.dart`): gece bahçesi bg (`ayarlarbg.jpg`), **liquid-glass Ses Efektleri düğmesi** (`glass_toggle.dart`), **Diğer Oyunlar** kartı buraya taşındı (`services/diger_oyunlar.dart`).
+- **Candy widget'lar**: `candy_glass_button.dart` (artık kullanılmıyor), `candy_mode_tile.dart`, `candy_bottom_bar.dart`, `glass_toggle.dart`.
+- **Titreşim** (`services/haptic_service.dart`): menü/kompartman tuşları=orta, rakam/Tamam/şık=hafif, yanlış cevap=güçlü (quiz/uzman/çarpım).
+- Oyun ekranlarında keypad, alt bar için 110px yukarı alındı.
+- `url_launcher: ^6.3.1` eklendi. Tüm `flutter analyze` temiz (yalnız önceden var olan stil-info'ları).
 
-## Yarım kalan
-- **Play inceleme sonucu:** Bekleniyor (Anıl'ın Play Console girişi gerek; ben giremiyorum). Politika durumu: Play Console → Matematikçik → Politika durumu.
-- **Gizlilik politikası adresi:** Hâlâ `anilgedikoglu.github.io/matematikcik/privacy-policy.html` (kişisel ad içeriyor). Red tekrar gelirse stüdyo alanına (`futurastictech.github.io/play/matematikcik/`) taşı.
-- **Büyüme (task 3):** Android 28g −%84 edinme, −%66 MAU; iOS 30g 6 indirme; AdMob −%66. Düşüş nedeni + büyüme planı henüz araştırılmadı.
+## ⚠️ DOĞRULAMA DURUMU (önemli)
+- Menü + Ayarlar görünümü **HTML önizlemeyle doğrulandı** (Anıl onayladı).
+- **Oyun ekranları (map/quiz/uzman/çarpım) + alt bar yerleşimi CİHAZDA DOĞRULANMADI** — keypad/level düğümleriyle bar çakışması olabilir (örn. macera haritasında 1. bölüm düğümü altta, bar üstünde). "test çıkar" denince build alıp gerçek cihazda gözlemle; gerekirse 110px payı / düğüm konumları ayarla.
+- `ModeSelectionScreen` artık erişilmiyor (ölü kod — silinebilir).
 
-## Denenip olmayan ve nedeni
-- Play Console otomasyonu: giriş Google hesabı gerektiriyor, şifreyi ben giremem → Anıl yapıyor.
-- Menü görseli cihazda değil HTML önizlemeyle doğrulandı (Flutter web build'i google_mobile_ads uyumu riskli).
+## Güvenlik kararı (VERİLDİ)
+- Anıl: "şimdilik bırak". İmza şifresi redaksiyonu + `.gitignore` koruması yeterli; geçmiş temizleme / key rotasyonu yapılmayacak. Bkz. imza-şifresi memory.
 
-## Sıradaki adım
-1. Anıl güvenlik kararını versin (A/B) → uygula.
-2. Play sonucu gelince: red ise gizlilik adresini taşı; kabul ise yeni sürümü yayınla.
-3. Büyüme analizi + plan (task 3).
-4. Candy menüyü gerçek cihazda/doğrulamada gör.
+## Yarım kalan / sıradaki
+- Play inceleme sonucu (Anıl'ın Play Console girişiyle).
+- Yeni UI'ı cihazda doğrula → "test çıkar" → +8 build → yükle.
+- Büyüme analizi (task 3): Android 28g −%84 edinme; henüz araştırılmadı.
+- Gizlilik politikası adresi hâlâ anilgedikoglu.github.io altında (ad içeriyor); red tekrar gelirse stüdyo alanına taşı.
