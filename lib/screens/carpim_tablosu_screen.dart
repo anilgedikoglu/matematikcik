@@ -2,6 +2,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import '../services/ad_service.dart';
 import '../services/audio_service.dart';
+import '../widgets/global_bottom_bar.dart';
 
 const int _totalQuestions = 20;
 
@@ -242,10 +243,12 @@ class _CarpimTablosuScreenState extends State<CarpimTablosuScreen>
             const Spacer(flex: 2),
             _buildChoiceGrid(_choices),
             const Spacer(flex: 1),
+            const SizedBox(height: 110), // alt kompartman payı
           ],
         ),
         if (_fb != _FB.none)
           ScaleTransition(scale: _fbScale, child: _buildFeedbackBadge()),
+        const GlobalBottomBar(),
       ],
     );
   }
@@ -268,18 +271,7 @@ class _CarpimTablosuScreenState extends State<CarpimTablosuScreen>
         children: [
           Row(
             children: [
-              GestureDetector(
-                onTap: () => Navigator.of(context).pop(false),
-                child: Container(
-                  width: 40, height: 40,
-                  decoration: BoxDecoration(
-                    color: Colors.white.withValues(alpha: 0.85),
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: const Icon(Icons.arrow_back_ios_new_rounded,
-                      color: Color(0xFF7C5CBF), size: 18),
-                ),
-              ),
+              const SizedBox(width: 40, height: 40),
               const Spacer(),
               const Text(
                 'Çarpım Tablosu',

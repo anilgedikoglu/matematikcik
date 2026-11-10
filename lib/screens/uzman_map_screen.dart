@@ -3,6 +3,7 @@ import '../services/save_service.dart';
 import '../services/audio_service.dart';
 import 'uzman_quiz_screen.dart';
 import 'menu_screen.dart';
+import '../widgets/global_bottom_bar.dart';
 
 const List<String> _uzmanBgs = [
   'assets/uzmanmodubg.png',
@@ -145,25 +146,7 @@ class _UzmanMapScreenState extends State<UzmanMapScreen> with SingleTickerProvid
               }),
             );
           }),
-          SafeArea(
-            child: Padding(
-              padding: const EdgeInsets.all(12),
-              child: Align(
-                alignment: Alignment.topLeft,
-                child: GestureDetector(
-                  onTap: _goToMainMenu,
-                  child: Container(
-                    width: 44, height: 44,
-                    decoration: BoxDecoration(
-                      color: Colors.white.withValues(alpha: 0.85),
-                      borderRadius: BorderRadius.circular(14),
-                    ),
-                    child: const Icon(Icons.arrow_back_ios_new_rounded, color: Color(0xFF7C5CBF)),
-                  ),
-                ),
-              ),
-            ),
-          ),
+          const GlobalBottomBar(),
         ],
       ),
     );

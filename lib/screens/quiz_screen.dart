@@ -5,6 +5,7 @@ import '../models/level_questions.dart';
 import '../models/game_state.dart';
 import '../services/audio_service.dart';
 import '../services/ad_service.dart';
+import '../widgets/global_bottom_bar.dart';
 
 // ── Renkler ────────────────────────────────────────────────────────────────
 class _C {
@@ -318,11 +319,12 @@ class _QuizScreenState extends State<QuizScreen> with TickerProviderStateMixin {
             ],
             _buildInputArea(),
             if (_world <= 2) const Spacer(),
-            const SizedBox(height: 20),
+            const SizedBox(height: 110), // alt kompartman payı
           ],
         ),
         if (_fb != _FB.none)
           ScaleTransition(scale: _fbScale, child: _buildFeedbackBadge()),
+        const GlobalBottomBar(),
       ],
     );
   }
@@ -337,20 +339,7 @@ class _QuizScreenState extends State<QuizScreen> with TickerProviderStateMixin {
           // Satır 1: geri | Bölüm X (orta)
           Row(
             children: [
-              GestureDetector(
-                onTap: () => Navigator.of(context).pop(),
-                child: Container(
-                  width: 40, height: 40,
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(12),
-                    boxShadow: [BoxShadow(
-                      color: _C.purple.withValues(alpha: 0.15), blurRadius: 6)],
-                  ),
-                  child: const Icon(Icons.arrow_back_ios_new_rounded,
-                      color: _C.purple, size: 18),
-                ),
-              ),
+              const SizedBox(width: 40, height: 40),
               const Spacer(),
               Text('Bölüm ${widget.level}',
                   style: const TextStyle(

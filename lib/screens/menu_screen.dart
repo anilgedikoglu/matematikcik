@@ -1,6 +1,4 @@
-import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:url_launcher/url_launcher.dart';
 import '../services/save_service.dart';
 import '../services/audio_service.dart';
 import '../models/game_state.dart';
@@ -10,22 +8,6 @@ import 'map_screen.dart';
 import 'uzman_map_screen.dart';
 import 'carpim_tablosu_screen.dart';
 import 'settings_screen.dart';
-
-// ─── 🎮 DİĞER OYUNLAR ────────────────────────────────────────────────────────
-// Geliştiricinin mağaza sayfasını açar (artık Ayarlar ekranında kullanılıyor).
-class DigerOyunlar {
-  static final Uri _ios =
-      Uri.parse('https://apps.apple.com/developer/id1612979370');
-  static final Uri _android = Uri.parse(
-      'https://play.google.com/store/apps/developer?id=Futurastic+Teknoloji+Limited+%C5%9Eirketi');
-
-  static Future<void> ac() async {
-    final uri = Platform.isIOS ? _ios : _android;
-    try {
-      await launchUrl(uri, mode: LaunchMode.externalApplication);
-    } catch (_) {}
-  }
-}
 
 class MenuScreen extends StatefulWidget {
   const MenuScreen({super.key});

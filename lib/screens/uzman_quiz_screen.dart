@@ -4,6 +4,7 @@ import '../models/uzman_level_questions.dart';
 import '../models/question.dart';
 import '../services/audio_service.dart';
 import '../services/ad_service.dart';
+import '../widgets/global_bottom_bar.dart';
 
 enum _FB { none, correct, wrong }
 
@@ -195,13 +196,14 @@ class _UzmanQuizScreenState extends State<UzmanQuizScreen> with TickerProviderSt
               ),
             ),
             _buildKeypad(),
-            const SizedBox(height: 12),
+            const SizedBox(height: 110), // alt kompartman payı
           ],
         ),
         if (_fb != _FB.none)
           Center(
             child: ScaleTransition(scale: _fbScale, child: _buildFeedbackBadge()),
           ),
+        const GlobalBottomBar(),
       ],
     );
   }
@@ -215,18 +217,7 @@ class _UzmanQuizScreenState extends State<UzmanQuizScreen> with TickerProviderSt
         children: [
           Row(
             children: [
-              GestureDetector(
-                onTap: () => Navigator.of(context).pop(null),
-                child: Container(
-                  width: 40, height: 40,
-                  decoration: BoxDecoration(
-                    color: Colors.white.withValues(alpha: 0.85),
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: const Icon(Icons.arrow_back_ios_new_rounded,
-                      color: Color(0xFF7C5CBF), size: 18),
-                ),
-              ),
+              const SizedBox(width: 40, height: 40),
               const Spacer(),
               Text(
                 'Bölüm ${widget.level}',
