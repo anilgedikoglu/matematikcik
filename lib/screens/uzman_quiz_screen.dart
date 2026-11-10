@@ -4,6 +4,7 @@ import '../models/uzman_level_questions.dart';
 import '../models/question.dart';
 import '../services/audio_service.dart';
 import '../services/ad_service.dart';
+import '../services/haptic_service.dart';
 import '../widgets/global_bottom_bar.dart';
 
 enum _FB { none, correct, wrong }
@@ -77,6 +78,7 @@ class _UzmanQuizScreenState extends State<UzmanQuizScreen> with TickerProviderSt
 
   void _onKey(String key) {
     if (_fb != _FB.none || _levelDone || _gameOver) return;
+    Haptic.light();
     setState(() {
       if (key == '⌫') {
         if (_input.isNotEmpty) _input = _input.substring(0, _input.length - 1);
@@ -90,6 +92,7 @@ class _UzmanQuizScreenState extends State<UzmanQuizScreen> with TickerProviderSt
 
   Future<void> _onSubmit() async {
     if (_fb != _FB.none || _levelDone || _gameOver) return;
+    Haptic.light();
     final val = int.tryParse(_input);
     if (val == null) return;
     _timerCtrl.stop();
@@ -109,6 +112,7 @@ class _UzmanQuizScreenState extends State<UzmanQuizScreen> with TickerProviderSt
     if (correct) {
       AudioService.playCorrect();
     } else {
+      Haptic.heavy();
       _shakeCtrl.forward(from: 0);
       setState(() => _lives--);
     }

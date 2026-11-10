@@ -1,5 +1,6 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
+import '../services/haptic_service.dart';
 
 /// Candy liquid-glass alt kompartman (Magnus cam alt barından, candy modelde).
 /// Sol: Ana Menü · Orta: yükseltilmiş Play · Sağ: Ayarlar.
@@ -137,6 +138,7 @@ class _IconBtnState extends State<_IconBtn> {
       onTapDown: (_) => setState(() => _down = true),
       onTapUp: (_) {
         setState(() => _down = false);
+        Haptic.medium();
         widget.onTap();
       },
       onTapCancel: () => setState(() => _down = false),
@@ -187,6 +189,7 @@ class _PlayBtnState extends State<_PlayBtn> {
       onTapDown: (_) => setState(() => _down = true),
       onTapUp: (_) {
         setState(() => _down = false);
+        Haptic.medium();
         widget.onTap();
       },
       onTapCancel: () => setState(() => _down = false),

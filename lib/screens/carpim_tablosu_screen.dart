@@ -2,6 +2,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import '../services/ad_service.dart';
 import '../services/audio_service.dart';
+import '../services/haptic_service.dart';
 import '../widgets/global_bottom_bar.dart';
 
 const int _totalQuestions = 20;
@@ -101,8 +102,10 @@ class _CarpimTablosuScreenState extends State<CarpimTablosuScreen>
 
   Future<void> _selectChoice(int choice) async {
     if (_fb != _FB.none || _gameOver || _done) return;
+    Haptic.light();
     final isCorrect = choice == _correctAnswer;
     _childIndex = _rng.nextInt(4) + 1;
+    if (!isCorrect) Haptic.heavy();
 
     setState(() {
       _fb = isCorrect ? _FB.correct : _FB.wrong;

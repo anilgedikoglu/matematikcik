@@ -1,5 +1,6 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
+import '../services/haptic_service.dart';
 
 /// Ana menüdeki candy liquid-glass mod karesi (ikon + ad + ilerleme).
 class CandyModeTile extends StatefulWidget {
@@ -38,6 +39,7 @@ class _CandyModeTileState extends State<CandyModeTile> {
       onTapDown: (_) => setState(() => _down = true),
       onTapUp: (_) {
         setState(() => _down = false);
+        Haptic.medium();
         widget.onTap();
       },
       onTapCancel: () => setState(() => _down = false),

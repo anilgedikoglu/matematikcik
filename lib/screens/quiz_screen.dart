@@ -5,6 +5,7 @@ import '../models/level_questions.dart';
 import '../models/game_state.dart';
 import '../services/audio_service.dart';
 import '../services/ad_service.dart';
+import '../services/haptic_service.dart';
 import '../widgets/global_bottom_bar.dart';
 
 // ── Renkler ────────────────────────────────────────────────────────────────
@@ -179,6 +180,7 @@ class _QuizScreenState extends State<QuizScreen> with TickerProviderStateMixin {
   // ── Seçim butonu tıklama ──────────────────────────────────────────────
   void _onButtonChoice(int value) {
     if (_fb != _FB.none) return;
+    Haptic.light();
     _timerCtrl.stop();
     _advanceAfterFeedback(correct: value == _current.answer);
   }
@@ -186,6 +188,7 @@ class _QuizScreenState extends State<QuizScreen> with TickerProviderStateMixin {
   // ── Keypad tuşu ────────────────────────────────────────────────────────
   void _onKey(String key) {
     if (_fb != _FB.none) return;
+    Haptic.light();
     if (key == 'backspace') {
       if (_input.isNotEmpty) setState(() => _input = _input.substring(0, _input.length - 1));
     } else if (key == 'check') {
@@ -215,6 +218,7 @@ class _QuizScreenState extends State<QuizScreen> with TickerProviderStateMixin {
     if (correct) {
       AudioService.playCorrect();
     } else {
+      Haptic.heavy();
       _shakeCtrl.forward(from: 0);
       setState(() => _lives--);
     }
