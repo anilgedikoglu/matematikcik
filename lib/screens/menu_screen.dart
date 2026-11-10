@@ -207,19 +207,15 @@ class _MenuScreenState extends State<MenuScreen>
       body: Stack(
         fit: StackFit.expand,
         children: [
-          Image.asset('assets/bg.png', fit: BoxFit.cover),
+          Image.asset('assets/anamenubg.jpg', fit: BoxFit.cover),
           SafeArea(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                const SizedBox(height: 40),
-                Center(
-                  child: Transform.translate(
-                    offset: const Offset(-6, 0),
-                    child: Image.asset('assets/mat1.png', height: 118),
-                  ),
-                ),
-                const Spacer(flex: 1),
+                // Başlık (MATEMATİKÇİK) arka planın üzerinde hazır geliyor;
+                // ayrı logo kaldırıldı. Üstteki boşluk içeriği başlığın
+                // altındaki açık gökyüzü alanına indirir.
+                const Spacer(flex: 20),
                 if (hasSave || _uzmanLevel > 1 || _carpimStars > 0)
                   AnimatedBuilder(
                     animation: _glowAnim,
@@ -270,7 +266,7 @@ class _MenuScreenState extends State<MenuScreen>
                       );
                     },
                   ),
-                const Spacer(flex: 1),
+                const Spacer(flex: 6),
                 CandyGlassButton(
                   label: 'YENİ OYUN',
                   color: const Color(0xFFFF6B9D),
@@ -296,7 +292,7 @@ class _MenuScreenState extends State<MenuScreen>
                   color: const Color(0xFF9B6BD6),
                   onTap: () => DigerOyunlar.ac(),
                 ),
-                const Spacer(flex: 2),
+                const Spacer(flex: 16),
               ],
             ),
           ),
