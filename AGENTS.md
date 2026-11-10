@@ -47,7 +47,7 @@
 ## Keystore / İmzalama
 - Keystore: `C:/src/matematikcik/android/matematikcik-release.jks`
 - key.properties: `C:/src/matematikcik/android/key.properties`
-- Şifreler: `Mat3m4t1kc1k!` (store + key şifresi aynı)
+- Şifreler: **repoya YAZILMAZ** (store + key şifresi aynı). Yerel `android/key.properties` dosyasında / Anıl'ın parola yöneticisinde tutulur — bu repo PUBLIC.
 - Alias: `matematikcik`
 - **Worktree'de build yaparken**: key.properties ve .jks dosyasını worktree'nin android/ klasörüne kopyalamak gerekir; storeFile yolu absolute olmalı (`C:/src/matematikcik/android/matematikcik-release.jks`)
 
