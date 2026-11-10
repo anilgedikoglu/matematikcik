@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../services/audio_service.dart';
+import '../widgets/glass_toggle.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -88,9 +89,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                               ),
                             ),
                           ),
-                          Switch(
+                          GlassToggle(
                             value: _sound,
-                            activeColor: const Color(0xFF56C068),
                             onChanged: (val) {
                               setState(() => _sound = val);
                               AudioService.setEnabled(val);
