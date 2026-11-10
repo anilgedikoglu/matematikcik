@@ -5,6 +5,7 @@ import '../services/save_service.dart';
 import '../services/audio_service.dart';
 import '../models/game_state.dart';
 import '../widgets/candy_glass_button.dart';
+import '../widgets/candy_bottom_bar.dart';
 import 'map_screen.dart';
 import 'uzman_map_screen.dart';
 import 'mode_selection_screen.dart';
@@ -282,18 +283,26 @@ class _MenuScreenState extends State<MenuScreen>
                 ),
                 const SizedBox(height: 16),
                 CandyGlassButton(
-                  label: 'AYARLAR',
-                  color: const Color(0xFF4BBEF5),
-                  onTap: _settings,
-                ),
-                const SizedBox(height: 16),
-                CandyGlassButton(
                   label: 'DİĞER OYUNLAR',
                   color: const Color(0xFF9B6BD6),
                   onTap: () => DigerOyunlar.ac(),
                 ),
-                const Spacer(flex: 16),
+                const Spacer(flex: 22),
               ],
+            ),
+          ),
+          SafeArea(
+            child: Align(
+              alignment: Alignment.bottomCenter,
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(16, 0, 16, 10),
+                child: CandyBottomBar(
+                  onHome: () =>
+                      Navigator.of(context).popUntil((r) => r.isFirst),
+                  onPlay: _newGame,
+                  onSettings: _settings,
+                ),
+              ),
             ),
           ),
         ],
