@@ -17,7 +17,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
       body: Stack(
         fit: StackFit.expand,
         children: [
-          Image.asset('assets/bg2.png', fit: BoxFit.cover),
+          Image.asset('assets/ayarlarbg.jpg', fit: BoxFit.cover),
           SafeArea(
             child: Column(
               children: [
