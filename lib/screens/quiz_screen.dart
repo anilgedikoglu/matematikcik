@@ -293,7 +293,8 @@ class _QuizScreenState extends State<QuizScreen> with TickerProviderStateMixin {
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
             stops: [0.0, 0.5, 1.0],
-            colors: [Color(0xFFFFF0F5), Color(0xFFEDF4FF), Color(0xFFFFF8E7)],
+            // Soft, barely-there tint — not pure white, easy on the eyes (Anıl 2026-11-12).
+            colors: [Color(0xFFE7E0F3), Color(0xFFDDE8F4), Color(0xFFF0E8DB)],
           ),
         ),
         child: SafeArea(child: _buildQuiz()),
