@@ -1,5 +1,11 @@
 # Matematikcik — Proje Notları
 
+> ⚠️ **2026-11-13: Bu Flutter uygulamasının yerine Unity sürümü geçti.** Yeni kod: `C:\src\matematikcik-unity`
+> (özel repo `anilgedikoglu/matematikcik-unity`, dal `master`; notlar onun `CLAUDE.md` + `HANDOFF.md`'sinde).
+> Aynı kimliklerle (`com.matematikcik.app`, ASC 6779563082) **1.1.0** App Store + Google Play üretimine incelemeye
+> gönderildi (iOS build 455586; Play ARMv7+ARM64 AAB). Abonelik (Matematikçik Plus) + `matematikcik_remove_ads` eklendi.
+> Bu repo artık yalnız eski Flutter sürümünün (iOS 1.0 / Play 1.0.4+7) arşividir; yeni iş Unity reposunda.
+
 ## Genel Bilgi
 - Flutter uygulaması, Android (Play Store'da yayında), iOS (Codemagic ile TestFlight'a gönderilecek)
 - Paket adı: `com.matematikcik.app` (build.gradle.kts'te doğrulandı)
